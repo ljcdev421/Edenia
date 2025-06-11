@@ -1,0 +1,831 @@
+<!DOCTYPE html>
+<html lang="fr">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>EDENIA - Délices des champs</title>
+    <script src="https://cdn.tailwindcss.com/3.4.16"></script>
+    <script>
+      tailwind.config = {
+        theme: {
+          extend: {
+            colors: { primary: "#2E7D32", secondary: "#795548" },
+            borderRadius: {
+              none: "0px",
+              sm: "4px",
+              DEFAULT: "8px",
+              md: "12px",
+              lg: "16px",
+              xl: "20px",
+              "2xl": "24px",
+              "3xl": "32px",
+              full: "9999px",
+              button: "8px",
+            },
+          },
+        },
+      };
+    </script>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Pacifico&display=swap"
+      rel="stylesheet"
+    />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/remixicon/4.6.0/remixicon.min.css"
+    />
+    <style>
+      :where([class^="ri-"])::before {
+        content: "\f3c2";
+      }
+      body {
+        font-family: "Montserrat", sans-serif;
+        scroll-behavior: smooth;
+      }
+      .hero-section {
+        background-image: linear-gradient(
+            to right,
+            rgba(255, 255, 255, 0.9) 40%,
+            rgba(255, 255, 255, 0.1) 100%
+          ),
+          url("assets/img/hero.jpg");
+        background-size: cover;
+        background-position: center;
+      }
+      .search-input:focus {
+        outline: none;
+      }
+      .product-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1);
+      }
+      .scroll-animation {
+        opacity: 0;
+        transform: translateY(20px);
+        transition: opacity 0.6s ease-out, transform 0.6s ease-out;
+      }
+      .scroll-animation.active {
+        opacity: 1;
+        transform: translateY(0);
+      }
+      .back-to-top {
+        opacity: 0;
+        visibility: hidden;
+        transition: opacity 0.3s, visibility 0.3s;
+      }
+      .back-to-top.visible {
+        opacity: 1;
+        visibility: visible;
+      }
+      input[type="number"]::-webkit-inner-spin-button,
+      input[type="number"]::-webkit-outer-spin-button {
+        -webkit-appearance: none;
+        margin: 0;
+      }
+      .custom-checkbox {
+        position: relative;
+        cursor: pointer;
+      }
+      .custom-checkbox input {
+        position: absolute;
+        opacity: 0;
+        cursor: pointer;
+      }
+      .checkmark {
+        position: absolute;
+        top: 0;
+        left: 0;
+        height: 20px;
+        width: 20px;
+        background-color: #fff;
+        border: 2px solid #ccc;
+        border-radius: 4px;
+      }
+      .custom-checkbox:hover input ~ .checkmark {
+        border-color: #2e7d32;
+      }
+      .custom-checkbox input:checked ~ .checkmark {
+        background-color: #2e7d32;
+        border-color: #2e7d32;
+      }
+      .checkmark:after {
+        content: "";
+        position: absolute;
+        display: none;
+      }
+      .custom-checkbox input:checked ~ .checkmark:after {
+        display: block;
+      }
+      .custom-checkbox .checkmark:after {
+        left: 6px;
+        top: 2px;
+        width: 5px;
+        height: 10px;
+        border: solid white;
+        border-width: 0 2px 2px 0;
+        transform: rotate(45deg);
+    }
+
+    /* Galerie d'image */
+    .galerie_container{
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        min-height: 500px;
+        transform-style:preserve-3d ;
+    }
+
+    .galerie{
+        position:relative;
+        width:250px;
+        height: 250px;
+        transform-style: preserve-3d;
+        transition: 1.5s;
+        transform: perspective(1000px) rotateY(0deg);
+    }
+
+    .galerie span{
+        position:absolute;
+        top:0;
+        left:0;
+        width: 100%;
+        height:100%;
+        transform-origin: center;
+        transform-style: preserve-3d;
+        transform: rotateY(calc(var(--i) * 45deg)) translateZ(300px);
+        -webkit-box-reflect: below 0px linear-gradient(transparent, #0004);
+    }
+
+    .galerie span img{
+        position: absolute;
+        top: 0px;
+        left: 0px;
+        width: 100%;
+        height:100%;
+        object-fit: cover;
+        user-select: none;
+    }
+
+    .btns{
+        position:absolute;
+        bottom:10px;
+        display:flex;
+        gap:30px;
+    }
+
+    .btns .btn{
+        position:relative;
+        width: 60px;
+        height:60px;
+        border:2px solid #000;
+        border-radius: 50%;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        cursor:pointer;
+    }
+    .btns .btn:active{
+        background: #fff;
+    }
+
+    .btns .btn::before{
+        content:'';
+        position: absolute;
+        width: 15px;
+        height: 15px;
+        border-top:3px solid #000;
+        border-right:3px solid #000;
+        transform: rotate(45deg) translate(-2.5px, 2.5px);
+    }
+
+    .btns .prev::before{
+        transform: rotate(225deg) translate(-2.5px, 2.5px);
+    }
+    </style>
+  </head>
+  <body class="bg-[#F5F5F5] text-[#333333]">
+    <!-- Header -->
+    <header class="fixed w-full bg-white shadow-md z-50">
+        <div
+          class="container mx-auto px-4 py-3 flex justify-between items-center"
+        >
+          <div class="flex items-center">
+            <a href="#" class="text-3xl font-['Pacifico'] text-primary">EDENIA</a>
+            <span class="hidden md:inline-block ml-2 text-sm text-gray-500"
+              >Délices des champs</span
+            >
+          </div>
+          <!-- Desktop Navigation -->
+          <nav class="hidden md:flex items-center space-x-6">
+            <a href="index.html" class="font-medium hover:text-primary transition-colors"
+              >Accueil</a
+            >
+            <a
+              href="produits.html"
+              class="font-medium hover:text-primary transition-colors"
+              >Produits</a
+            >
+            <a
+              href="apropos.html"
+              class="font-medium text-primary border-b-2 border-primary"
+              >A propos</a
+            >
+            <a
+              href="stages.html"
+              class="font-medium hover:text-primary transition-colors"
+              >Stages</a
+            >
+            <a
+              href="contact.html"
+              class="font-medium hover:text-primary transition-colors"
+              >Contact</a
+            >
+          </nav>
+          <!-- Icons -->
+          <div class="flex items-center space-x-4">
+            <div class="relative w-8 h-8 flex items-center justify-center">
+              <a href="panier.html">
+                  <i
+                class="ri-shopping-cart-2-line ri-lg text-gray-600 cursor-pointer hover:text-primary transition-colors"
+              ></i>
+              <span
+                class="absolute -top-1 -right-1 bg-[#FF9800] text-white text-xs w-5 h-5 flex items-center justify-center rounded-full"
+                >3</span
+              >
+              </a>
+            </div>
+            <div class="relative w-8 h-8 flex items-center justify-center">
+              <a href="connexion.html">
+                  <i
+                class="ri-user-line ri-lg text-gray-600 cursor-pointer hover:text-primary transition-colors"
+              ></i>
+              </a>
+            </div>
+            <!-- Mobile Menu Button -->
+            <button
+              class="md:hidden w-8 h-8 flex items-center justify-center"
+              id="mobile-menu-button"
+            >
+              <i class="ri-menu-line ri-lg text-gray-600"></i>
+            </button>
+          </div>
+        </div>
+        <!-- Mobile Navigation -->
+        <div
+          class="md:hidden bg-white absolute w-full left-0 top-full shadow-md hidden"
+          id="mobile-menu"
+        >
+          <div class="container mx-auto px-4 py-3 flex flex-col space-y-3">
+            <a
+              href="index.html"
+              class="font-medium py-2 hover:text-primary transition-colors"
+              >Accueil</a
+            >
+            <a
+              href="produits.html"
+              class="font-medium py-2 hover:text-primary transition-colors"
+              >Produits</a
+            >
+            <a
+              href="apropos.html"
+              class="font-medium py-2 hover:text-primary transition-colors"
+              >A propos</a
+            >
+            <a
+              href="stages.html"
+              class="font-medium py-2 hover:text-primary transition-colors"
+              >Stages</a
+            >
+            <a
+              href="contact.html"
+              class="font-medium py-2 hover:text-primary transition-colors"
+              >Contact</a
+            >
+          </div>
+        </div>
+    </header>
+
+    <!-- Page Title Section -->
+    <section class="pt-24 pb-8 bg-white">
+        <div class="container mx-auto px-4">
+          <div class="flex flex-col items-center text-center">
+            <h1 class="text-3xl md:text-4xl font-bold mb-4 text-primary">
+              A Propos de Nous
+            </h1>
+            <p class="text-gray-600 max-w-2xl">
+                EDENIA, une ferme familiale engagée pour une agriculture naturelle et des produits sains, du champ à votre assiette.
+                
+            </p>
+            <div class="flex items-center text-sm text-gray-500 mt-4">
+              <a
+                href="index.html"
+                data-readdy="true"
+                class="hover:text-primary transition-colors"
+                >Accueil</a
+              >
+              <span class="mx-2">/</span>
+              <span class="text-primary">A propos</span>
+            </div>
+          </div>
+        </div>
+    </section>
+
+    <!-- Story section -->
+    <section class="bg-[#F8F9FA] py-16 px-4 sm:px-8 lg:px-20">
+        <div class="container mx-auto">
+            <h2 class="text-3xl font-bold text-black mb-10 text-center scroll-animation">Notre Histoire</h2>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-10 items-center">
+                <!-- Image -->
+                <div class="scroll-animation">
+                    <img src="assets/img/elevage_poule.jpg" alt="Ferme EDENIA" class="rounded-2xl shadow-md object-cover w-full h-auto">
+                </div>
+            
+                <!-- Texte -->
+                <div>
+                    <p class="text-gray-700 leading-relaxed mb-4 scroll-animation">
+                        Fondée avec passion et détermination, la ferme <strong>EDENIA</strong> (Délices des champs) est née de l’envie de proposer des produits frais, locaux et naturels, directement issus de nos champs et de notre élevage.
+                    </p>
+                    <p class="text-gray-700 leading-relaxed mb-4 scroll-animation">
+                        De la culture de la banane Cavendish à l’élevage de porcs, de poules pondeuses et d’escargots, nous mettons un point d’honneur à respecter les cycles de la nature et à garantir la qualité de chaque produit.
+                    </p>
+                    <p class="text-gray-700 leading-relaxed mb-4 scroll-animation">
+                        De la culture de la banane Cavendish à l’élevage de porcs, de poules pondeuses et d’escargots, nous mettons un point d’honneur à respecter les cycles de la nature et à garantir la qualité de chaque produit.
+                    </p>
+                    <p class="text-gray-700 leading-relaxed mb-4 scroll-animation">
+                        De la culture de la banane Cavendish à l’élevage de porcs, de poules pondeuses et d’escargots, nous mettons un point d’honneur à respecter les cycles de la nature et à garantir la qualité de chaque produit.
+                    </p>
+                    <p class="text-gray-700 leading-relaxed mb-4 scroll-animation">
+                        De la culture de la banane Cavendish à l’élevage de porcs, de poules pondeuses et d’escargots, nous mettons un point d’honneur à respecter les cycles de la nature et à garantir la qualité de chaque produit.
+                    </p>
+                    <p class="text-gray-700 leading-relaxed scroll-animation">
+                        Aujourd’hui, EDENIA s’engage non seulement à nourrir sainement nos clients, mais aussi à former les générations futures à travers des stages et formations pratiques sur le terrain.
+                    </p>
+                </div>
+          
+            </div>
+        </div>
+    </section>
+
+    <!-- Mission section -->
+    <section class="bg-green-50 py-16 px-4 sm:px-8 lg:px-20">
+        <div class="max-w-5xl mx-auto text-center">
+          <h2 class="text-3xl font-bold text-black mb-6 scroll-animation">Notre Mission</h2>
+          <p class="text-gray-700 text-lg leading-relaxed mb-10 scroll-animation">
+            À la ferme <strong>EDENIA</strong>, notre mission est simple mais essentielle :
+            <br class="hidden sm:inline">
+            <span class="text-green-800 font-semibold">nourrir sainement, former utilement, et valoriser le terroir béninois.</span>
+          </p>
+          
+          <div class="grid grid-cols-1 md:grid-cols-3 gap-8 text-left">
+            <!-- Bloc 1 -->
+            <div class="bg-white p-6 rounded-xl shadow hover:shadow-lg transition scroll-animation">
+              <h3 class="text-xl font-semibold text-green-700 mb-2 text-center">Produire avec éthique</h3>
+              <p class="text-gray-600 text-center">
+                Offrir des produits agricoles et d’élevage de qualité, sans compromis sur le respect de la nature et du bien-être animal.
+              </p>
+            </div>
+      
+            <!-- Bloc 2 -->
+            <div class="bg-white p-6 rounded-xl shadow hover:shadow-lg transition scroll-animation">
+              <h3 class="text-xl font-semibold text-green-700 mb-2 text-center">Former les générations</h3>
+              <p class="text-gray-600 text-center">
+                Accompagner les jeunes et les passionnés grâce à des formations pratiques et immersives à la ferme.
+              </p>
+            </div>
+      
+            <!-- Bloc 3 -->
+            <div class="bg-white p-6 rounded-xl shadow hover:shadow-lg transition scroll-animation">
+              <h3 class="text-xl font-semibold text-green-700 mb-2 text-center">Servir la communauté</h3>
+              <p class="text-gray-600 text-center">
+                Répondre aux besoins alimentaires locaux tout en créant des opportunités durables pour nos communautés rurales.
+              </p>
+            </div>
+          </div>
+        </div>
+    </section>
+
+
+    <!-- Values Section -->
+    <section id="values" class="py-16 bg-[#F8F9FA]">
+        <div class="container mx-auto px-4">
+          <div class="text-center mb-12 scroll-animation">
+            <h2 class="text-3xl font-bold mb-3">Nos Valeurs</h2>
+            <p class="max-w-2xl mx-auto text-gray-600">
+              Chez EDENIA, nous cultivons avec passion et respect pour
+              l'environnement. Découvrez les valeurs qui guident notre travail
+              quotidien.
+            </p>
+          </div>
+          <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+            <!-- Value 1 -->
+            <div
+              class="bg-white p-6 rounded-lg shadow-md text-center scroll-animation"
+            >
+              <div
+                class="w-16 h-16 bg-primary bg-opacity-10 rounded-full flex items-center justify-center mx-auto mb-4"
+              >
+                <div
+                  class="w-8 h-8 flex items-center justify-center text-primary"
+                >
+                  <i class="ri-plant-line ri-2x"></i>
+                </div>
+              </div>
+              <h3 class="text-xl font-semibold mb-3">Agriculture Durable</h3>
+              <p class="text-gray-600">
+                Nous pratiquons une agriculture respectueuse de l'environnement,
+                sans pesticides ni produits chimiques nocifs, pour préserver la
+                biodiversité et la santé des sols.
+              </p>
+            </div>
+            <!-- Value 2 -->
+            <div
+              class="bg-white p-6 rounded-lg shadow-md text-center scroll-animation"
+            >
+              <div
+                class="w-16 h-16 bg-primary bg-opacity-10 rounded-full flex items-center justify-center mx-auto mb-4"
+              >
+                <div
+                  class="w-8 h-8 flex items-center justify-center text-primary"
+                >
+                  <i class="ri-heart-line ri-2x"></i>
+                </div>
+              </div>
+              <h3 class="text-xl font-semibold mb-3">Bien-être Animal</h3>
+              <p class="text-gray-600">
+                Nos animaux sont élevés dans le respect de leur bien-être, avec
+                accès au plein air, une alimentation saine et des conditions de
+                vie adaptées à leurs besoins naturels.
+              </p>
+            </div>
+            <!-- Value 3 -->
+            <div
+              class="bg-white p-6 rounded-lg shadow-md text-center scroll-animation"
+            >
+              <div
+                class="w-16 h-16 bg-primary bg-opacity-10 rounded-full flex items-center justify-center mx-auto mb-4"
+              >
+                <div
+                  class="w-8 h-8 flex items-center justify-center text-primary"
+                >
+                  <i class="ri-community-line ri-2x"></i>
+                </div>
+              </div>
+              <h3 class="text-xl font-semibold mb-3">Circuit Court</h3>
+              <p class="text-gray-600">
+                Nous privilégions la vente directe et les circuits courts pour
+                garantir la fraîcheur de nos produits, soutenir l'économie locale
+                et réduire notre empreinte carbone.
+              </p>
+            </div>
+          </div>
+        </div>
+    </section>
+
+
+    <!-- Vision Section -->
+    <section class="bg-green-50 py-16 px-4 sm:px-8 lg:px-20">
+        <div class="max-w-5xl mx-auto text-center">
+          <h2 class="text-3xl font-bold text-black mb-6 scroll-animation">Notre vision</h2>
+          <p class="text-lg text-gray-700 leading-relaxed mb-10 scroll-animation">
+            À <strong>EDENIA</strong>, nous rêvons d’un avenir où l’agriculture béninoise est un moteur de croissance durable,
+            où chaque ferme est un espace d’innovation, de savoir-faire et de fierté locale.
+          </p>
+          
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-8 text-left">
+            <!-- Bloc 1 -->
+            <div class="flex items-start space-x-4 scroll-animation">
+              <div class="bg-white p-3 rounded-full">
+                <svg class="w-6 h-6 text-green-700" fill="none" stroke="currentColor" stroke-width="2"
+                     viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round"
+                     d="M12 8c-1.657 0-3 .895-3 2v4h6v-4c0-1.105-1.343-2-3-2z" />
+                     <path stroke-linecap="round" stroke-linejoin="round"
+                     d="M20 12v6a2 2 0 01-2 2H6a2 2 0 01-2-2v-6" /></svg>
+              </div>
+              <div>
+                <h3 class="text-xl font-semibold text-green-700 mb-1">Une agriculture respectueuse</h3>
+                <p class="text-gray-600">
+                  Promouvoir des pratiques agricoles durables qui protègent l’environnement tout en nourrissant les populations.
+                </p>
+              </div>
+            </div>
+      
+            <!-- Bloc 2 -->
+            <div class="flex items-start space-x-4 scroll-animation">
+              <div class="bg-white p-3 rounded-full">
+                <svg class="w-6 h-6 text-green-700" fill="none" stroke="currentColor" stroke-width="2"
+                     viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round"
+                     d="M9 17v-4h6v4m-3-10h.01M12 1.75C6.615 1.75 2.25 6.115 2.25 11.5S6.615 21.25 12 21.25 21.75 16.885 21.75 11.5 17.385 1.75 12 1.75z" /></svg>
+              </div>
+              <div>
+                <h3 class="text-xl font-semibold text-green-700 mb-1">Un modèle inspirant</h3>
+                <p class="text-gray-600">
+                  Devenir une référence en matière de production responsable et de formation agricole en Afrique de l’Ouest.
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+    </section>
+
+
+    <!-- Galerie section -->
+    <section class="bg-white py-16 px-4 sm:px-8 lg:px-20">
+        <div class="overflow-x-hidden md:overflow-x-visible">
+            <div class="container mx-auto">
+                <div class="title_container">
+                    <h2 class="text-3xl font-bold text-black mb-6 scroll-animation text-center">Galerie</h2>
+                </div>
+                <div class="galerie_container scroll-animation">
+                    <div class="galerie">
+                        <span style="--i:1;"><img src="assets/img/elevage_porc.jpg" alt=""></span>
+                        <span style="--i:2;"><img src="assets/img/oeuf.jpg" alt=""></span>
+                        <span style="--i:3;"><img src="assets/img/porc.jpg" alt=""></span>
+                        <span style="--i:4;"><img src="assets/img/escargot.jpg" alt=""></span>
+                        <span style="--i:5;"><img src="assets/img/heliculture.jpg" alt=""></span>
+                        <span style="--i:6;"><img src="assets/img/culture_banane.jpg" alt=""></span>
+                        <span style="--i:7;"><img src="assets/img/elevage_poule.jpg" alt=""></span>
+                        <span style="--i:8;"><img src="assets/img/about2.png" alt=""></span>
+                    </div>
+                    <div class="btns">
+                        <div class="btn prev"></div>
+                        <div class="btn next"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="bg-[#333333] text-white pt-12 pb-6">
+        <div class="container mx-auto px-4">
+          <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 mb-8">
+            <!-- Column 1 -->
+            <div>
+              <a
+                href="#"
+                class="text-3xl font-['Pacifico'] text-white mb-4 inline-block"
+                >EDENIA</a
+              >
+              <p class="text-gray-300 mb-4">
+                Délices des champs, directement de notre ferme à votre table. Des
+                produits frais, sains et savoureux cultivés avec passion.
+              </p>
+              <div class="flex space-x-4">
+                <a
+                  href="#"
+                  class="w-10 h-10 bg-white bg-opacity-10 rounded-full flex items-center justify-center hover:bg-primary transition-colors"
+                >
+                  <div class="w-5 h-5 flex items-center justify-center">
+                    <i class="ri-facebook-fill text-white"></i>
+                  </div>
+                </a>
+                <a
+                  href="#"
+                  class="w-10 h-10 bg-white bg-opacity-10 rounded-full flex items-center justify-center hover:bg-primary transition-colors"
+                >
+                  <div class="w-5 h-5 flex items-center justify-center">
+                    <i class="ri-instagram-line text-white"></i>
+                  </div>
+                </a>
+                <a
+                  href="#"
+                  class="w-10 h-10 bg-white bg-opacity-10 rounded-full flex items-center justify-center hover:bg-primary transition-colors"
+                >
+                  <div class="w-5 h-5 flex items-center justify-center">
+                    <i class="ri-twitter-x-line text-white"></i>
+                  </div>
+                </a>
+              </div>
+            </div>
+            <!-- Column 2 -->
+            <div>
+              <h3 class="text-lg font-semibold mb-4">Liens Rapides</h3>
+              <ul class="space-y-2">
+                <li>
+                  <a
+                    href="#"
+                    class="text-gray-300 hover:text-white transition-colors"
+                    >Accueil</a
+                  >
+                </li>
+                <li>
+                  <a
+                    href="#products"
+                    class="text-gray-300 hover:text-white transition-colors"
+                    >Nos Produits</a
+                  >
+                </li>
+                <li>
+                  <a
+                    href="#stages"
+                    class="text-gray-300 hover:text-white transition-colors"
+                    >Stages</a
+                  >
+                </li>
+                <li>
+                  <a
+                    href="#contact"
+                    class="text-gray-300 hover:text-white transition-colors"
+                    >Contact</a
+                  >
+                </li>
+                <li>
+                  <a
+                    href="#"
+                    class="text-gray-300 hover:text-white transition-colors"
+                    >À Propos</a
+                  >
+                </li>
+              </ul>
+            </div>
+            <!-- Column 3 -->
+            <div>
+              <h3 class="text-lg font-semibold mb-4">Nos Produits</h3>
+              <ul class="space-y-2">
+                <li>
+                  <a
+                    href="#"
+                    class="text-gray-300 hover:text-white transition-colors"
+                    >Bananes Cavendish</a
+                  >
+                </li>
+                <li>
+                  <a
+                    href="#"
+                    class="text-gray-300 hover:text-white transition-colors"
+                    >Œufs Fermiers</a
+                  >
+                </li>
+                <li>
+                  <a
+                    href="#"
+                    class="text-gray-300 hover:text-white transition-colors"
+                    >Escargots Précuits</a
+                  >
+                </li>
+                <li>
+                  <a
+                    href="#"
+                    class="text-gray-300 hover:text-white transition-colors"
+                    >Porc Fermier</a
+                  >
+                </li>
+                <li>
+                  <a
+                    href="#"
+                    class="text-gray-300 hover:text-white transition-colors"
+                    >Formules spéciales</a
+                  >
+                </li>
+              </ul>
+            </div>
+            <!-- Column 4 -->
+            <div>
+              <h3 class="text-lg font-semibold mb-4">Newsletter</h3>
+              <p class="text-gray-300 mb-4">
+                Inscrivez-vous pour recevoir nos actualités et offres spéciales.
+              </p>
+              <form>
+                <div class="flex mb-3">
+                  <input
+                    type="email"
+                    placeholder="Votre email"
+                    class="bg-white bg-opacity-10 text-white px-4 py-2 rounded-l-button w-full focus:outline-none border-none"
+                    style="min-width: 0"
+                  />
+                  <button
+                    type="submit"
+                    class="bg-[#FF9800] text-white px-4 py-2 rounded-r-button hover:bg-opacity-90 transition-colors whitespace-nowrap"
+                  >
+                    S'inscrire
+                  </button>
+                </div>
+                <label class="custom-checkbox flex items-center">
+                  <span class="ml-7 text-gray-300 text-sm"
+                    >J'accepte de recevoir la newsletter</span
+                  >
+                  <input type="checkbox" />
+                  <span class="checkmark border-gray-500"></span>
+                </label>
+              </form>
+            </div>
+          </div>
+          <div class="border-t border-gray-700 pt-6 mt-6">
+            <div class="flex flex-col md:flex-row justify-between items-center">
+              <p class="text-gray-400 text-sm mb-4 md:mb-0">
+                &copy; 2025 EDENIA - Délices des champs. Tous droits réservés.
+              </p>
+              <div class="flex flex-wrap gap-4 text-sm text-gray-400">
+                <a href="#" class="hover:text-white transition-colors"
+                  >Mentions Légales</a
+                >
+                <a href="#" class="hover:text-white transition-colors"
+                  >Politique de Confidentialité</a
+                >
+                <a href="#" class="hover:text-white transition-colors">CGV</a>
+              </div>
+            </div>
+          </div>
+        </div>
+    </footer>
+
+
+    <!-- Back to Top Button -->
+    <button
+      id="back-to-top"
+      class="back-to-top fixed bottom-6 right-6 bg-primary text-white p-3 rounded-full shadow-lg z-50"
+    >
+      <div class="w-6 h-6 flex items-center justify-center">
+        <i class="ri-arrow-up-line"></i>
+      </div>
+    </button>
+
+
+    <!-- Scripts -->
+    <script id="mobile-menu-script">
+        document.addEventListener("DOMContentLoaded", function () {
+          const mobileMenuButton = document.getElementById("mobile-menu-button");
+          const mobileMenu = document.getElementById("mobile-menu");
+          mobileMenuButton.addEventListener("click", function () {
+            mobileMenu.classList.toggle("hidden");
+            if (mobileMenu.classList.contains("hidden")) {
+              mobileMenuButton.innerHTML =
+                '<i class="ri-menu-line ri-lg text-gray-600"></i>';
+            } else {
+              mobileMenuButton.innerHTML =
+                '<i class="ri-close-line ri-lg text-gray-600"></i>';
+            }
+          });
+          // Close mobile menu when clicking on a link
+          const mobileLinks = mobileMenu.querySelectorAll("a");
+          mobileLinks.forEach((link) => {
+            link.addEventListener("click", function () {
+              mobileMenu.classList.add("hidden");
+              mobileMenuButton.innerHTML =
+                '<i class="ri-menu-line ri-lg text-gray-600"></i>';
+            });
+          });
+        });
+    </script>
+    <script id="scroll-animation-script">
+        document.addEventListener("DOMContentLoaded", function () {
+          const scrollAnimations = document.querySelectorAll(".scroll-animation");
+          function checkScroll() {
+            scrollAnimations.forEach((animation) => {
+              const animationPosition = animation.getBoundingClientRect().top;
+              const screenPosition = window.innerHeight / 1.2;
+              if (animationPosition < screenPosition) {
+                animation.classList.add("active");
+              }
+            });
+          }
+          // Initial check
+          checkScroll();
+          // Check on scroll
+          window.addEventListener("scroll", checkScroll);
+        });
+    </script>
+    <script id="back-to-top-script">
+        document.addEventListener("DOMContentLoaded", function () {
+          const backToTopButton = document.getElementById("back-to-top");
+          function toggleBackToTopButton() {
+            if (window.pageYOffset > 300) {
+              backToTopButton.classList.add("visible");
+            } else {
+              backToTopButton.classList.remove("visible");
+            }
+          }
+          backToTopButton.addEventListener("click", function () {
+            window.scrollTo({
+              top: 0,
+              behavior: "smooth",
+            });
+          });
+          window.addEventListener("scroll", toggleBackToTopButton);
+          toggleBackToTopButton();
+        });
+      </script>
+    <script>
+        let prev = document.querySelector('.prev');
+        let next = document.querySelector('.next');
+        let galerie = document.querySelector('.galerie');
+    
+        let degrees = 0;
+    
+        prev.addEventListener('click', function(){
+            degrees += 45;
+            galerie.style= `transform: perspective(1000px) rotateY(${degrees}deg);`
+        })
+    
+        next.addEventListener('click', function(){
+            degrees -= 45;
+            galerie.style= `transform: perspective(1000px) rotateY(${degrees}deg);`
+        })
+    </script>
+  </body>

@@ -1,0 +1,903 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EDENIA - Catalogue de Produits</title>
+    <script src="https://cdn.tailwindcss.com/3.4.16"></script>
+    <script>tailwind.config={theme:{extend:{colors:{primary:'#2E7D32',secondary:'#795548'},borderRadius:{'none':'0px','sm':'4px',DEFAULT:'8px','md':'12px','lg':'16px','xl':'20px','2xl':'24px','3xl':'32px','full':'9999px','button':'8px'}}}}</script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Pacifico&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/remixicon/4.6.0/remixicon.min.css">
+    <style>
+        :where([class^="ri-"])::before { content: "\f3c2"; }
+        body {
+            font-family: 'Montserrat', sans-serif;
+            scroll-behavior: smooth;
+        }
+        .search-input:focus {
+            outline: none;
+        }
+        .product-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1);
+        }
+        input[type="number"]::-webkit-inner-spin-button,
+        input[type="number"]::-webkit-outer-spin-button {
+            -webkit-appearance: none;
+            margin: 0;
+        }
+        .price-slider {
+            -webkit-appearance: none;
+            width: 100%;
+            height: 6px;
+            border-radius: 5px;
+            background: #e0e0e0;
+            outline: none;
+        }
+        .price-slider::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 18px;
+            height: 18px;
+            border-radius: 50%;
+            background: #2E7D32;
+            cursor: pointer;
+        }
+        .price-slider::-moz-range-thumb {
+            width: 18px;
+            height: 18px;
+            border-radius: 50%;
+            background: #2E7D32;
+            cursor: pointer;
+            border: none;
+        }
+        .custom-checkbox {
+            position: relative;
+            cursor: pointer;
+            padding-left: 28px;
+            display: block;
+            margin-bottom: 12px;
+        }
+        .custom-checkbox input {
+            position: absolute;
+            opacity: 0;
+            cursor: pointer;
+            height: 0;
+            width: 0;
+        }
+        .checkmark {
+            position: absolute;
+            top: 0;
+            left: 0;
+            height: 20px;
+            width: 20px;
+            background-color: #fff;
+            border: 2px solid #ddd;
+            border-radius: 4px;
+        }
+        .custom-checkbox:hover input ~ .checkmark {
+            border-color: #2E7D32;
+        }
+        .custom-checkbox input:checked ~ .checkmark {
+            background-color: #2E7D32;
+            border-color: #2E7D32;
+        }
+        .checkmark:after {
+            content: "";
+            position: absolute;
+            display: none;
+        }
+        .custom-checkbox input:checked ~ .checkmark:after {
+            display: block;
+        }
+        .custom-checkbox .checkmark:after {
+            left: 6px;
+            top: 2px;
+            width: 5px;
+            height: 10px;
+            border: solid white;
+            border-width: 0 2px 2px 0;
+            transform: rotate(45deg);
+        }
+        .pagination-btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 40px;
+            height: 40px;
+            border-radius: 8px;
+            transition: all 0.3s;
+        }
+        .pagination-btn.active {
+            background-color: #2E7D32;
+            color: white;
+        }
+        .sort-select {
+            appearance: none;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='%23666666'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M19 9l-7 7-7-7'%3E%3C/path%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: right 0.5rem center;
+            background-size: 1.5em 1.5em;
+            padding-right: 2.5rem;
+        }
+        .filter-toggle {
+            display: none;
+        }
+        @media (max-width: 768px) {
+            .filters-sidebar {
+                position: fixed;
+                left: -100%;
+                top: 0;
+                width: 85%;
+                height: 100%;
+                z-index: 100;
+                transition: left 0.3s ease-in-out;
+                overflow-y: auto;
+            }
+            .filters-sidebar.active {
+                left: 0;
+            }
+            .filter-toggle {
+                display: flex;
+            }
+            .filter-overlay {
+                position: fixed;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 100%;
+                background-color: rgba(0, 0, 0, 0.5);
+                z-index: 99;
+                display: none;
+            }
+            .filter-overlay.active {
+                display: block;
+            }
+        }
+    </style>
+</head>
+<body class="bg-[#F5F5F5] text-[#333333]">
+    
+    <!-- Header -->
+    <header class="fixed w-full bg-white shadow-md z-50">
+        <div
+          class="container mx-auto px-4 py-3 flex justify-between items-center"
+        >
+          <div class="flex items-center">
+            <a href="#" class="text-3xl font-['Pacifico'] text-primary">EDENIA</a>
+            <span class="hidden md:inline-block ml-2 text-sm text-gray-500"
+              >Délices des champs</span
+            >
+          </div>
+          <!-- Desktop Navigation -->
+          <nav class="hidden md:flex items-center space-x-6">
+            <a href="index.html" class="font-medium hover:text-primary transition-colors"
+              >Accueil</a
+            >
+            <a
+              href="produits.html"
+              class="font-medium text-primary border-b-2 border-primary"
+              >Produits</a
+            >
+            <a
+              href="apropos.html"
+              class="font-medium hover:text-primary transition-colors"
+              >A propos</a
+            >
+            <a
+              href="stages.html"
+              class="font-medium hover:text-primary transition-colors"
+              >Stages</a
+            >
+            <a
+              href="contact.html"
+              class="font-medium hover:text-primary transition-colors"
+              >Contact</a
+            >
+          </nav>
+          <!-- Icons -->
+          <div class="flex items-center space-x-4">
+            <div class="relative w-8 h-8 flex items-center justify-center">
+              <a href="panier.html">
+                  <i
+                class="ri-shopping-cart-2-line ri-lg text-gray-600 cursor-pointer hover:text-primary transition-colors"
+              ></i>
+              <span
+                class="absolute -top-1 -right-1 bg-[#FF9800] text-white text-xs w-5 h-5 flex items-center justify-center rounded-full"
+                >3</span
+              >
+              </a>
+            </div>
+            <div class="relative w-8 h-8 flex items-center justify-center">
+              <a href="connexion.html">
+                  <i
+                class="ri-user-line ri-lg text-gray-600 cursor-pointer hover:text-primary transition-colors"
+              ></i>
+              </a>
+            </div>
+            <!-- Mobile Menu Button -->
+            <button
+              class="md:hidden w-8 h-8 flex items-center justify-center"
+              id="mobile-menu-button"
+            >
+              <i class="ri-menu-line ri-lg text-gray-600"></i>
+            </button>
+          </div>
+        </div>
+        <!-- Mobile Navigation -->
+        <div
+          class="md:hidden bg-white absolute w-full left-0 top-full shadow-md hidden"
+          id="mobile-menu"
+        >
+          <div class="container mx-auto px-4 py-3 flex flex-col space-y-3">
+            <a
+              href="index.html"
+              class="font-medium py-2 hover:text-primary transition-colors"
+              >Accueil</a
+            >
+            <a
+              href="produits.html"
+              class="font-medium py-2 hover:text-primary transition-colors"
+              >Produits</a
+            >
+            <a
+              href="apropos.html"
+              class="font-medium py-2 hover:text-primary transition-colors"
+              >A propos</a
+            >
+            <a
+              href="stages.html"
+              class="font-medium py-2 hover:text-primary transition-colors"
+              >Stages</a
+            >
+            <a
+              href="contact.html"
+              class="font-medium py-2 hover:text-primary transition-colors"
+              >Contact</a
+            >
+          </div>
+        </div>
+    </header>
+
+
+
+    <!-- Main Content -->
+    <main class="pt-24 pb-16">
+        <!-- Page Title -->
+        <div class="bg-white py-8 mb-6 shadow-sm">
+            <div class="container mx-auto px-4">
+                <h1 class="text-3xl font-bold text-primary">Catalogue de Produits</h1>
+                <div class="flex items-center text-sm text-gray-500 mt-2">
+                    <a href="index.html" data-readdy="true" class="hover:text-primary transition-colors">Accueil</a>
+                    <span class="mx-2">/</span>
+                    <span class="text-primary">Produits</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="container mx-auto px-4">
+            <div class="flex flex-col md:flex-row gap-6">
+                <!-- Mobile Filter Toggle -->
+                <button class="filter-toggle mb-4 md:hidden bg-white text-gray-700 border border-gray-200 px-4 py-3 rounded-button font-medium hover:border-primary hover:text-primary transition-colors whitespace-nowrap flex items-center justify-center scroll-animation" id="filter-toggle">
+                    <div class="w-5 h-5 flex items-center justify-center mr-2">
+                        <i class="ri-filter-3-line"></i>
+                    </div>
+                    <span>Filtres</span>
+                </button>
+
+                <!-- Filter Overlay -->
+                <div class="filter-overlay" id="filter-overlay"></div>
+
+                <!-- Filters Sidebar -->
+                <aside class="filters-sidebar bg-white p-5 shadow-md md:rounded-lg md:w-1/4 md:sticky md:top-24 h-fit" id="filters-sidebar">
+                    <div class="flex justify-between items-center mb-5 md:hidden scroll-animation">
+                        <h3 class="text-lg font-semibold">Filtres</h3>
+                        <button class="w-8 h-8 flex items-center justify-center" id="close-filter">
+                            <i class="ri-close-line ri-lg"></i>
+                        </button>
+                    </div>
+
+                    <!-- Search -->
+                    <div class="mb-6 scroll-animation">
+                        <h3 class="text-lg font-semibold mb-3 hidden md:block">Recherche</h3>
+                        <div class="relative">
+                            <input type="text" class="search-input w-full px-4 py-3 border border-gray-200 rounded-button focus:border-primary" placeholder="Rechercher un produit...">
+                            <div class="absolute right-3 top-1/2 transform -translate-y-1/2 w-6 h-6 flex items-center justify-center">
+                                <i class="ri-search-line text-gray-400"></i>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Categories -->
+                    <div class="mb-6">
+                        <h3 class="text-lg font-semibold mb-3 scroll-animation">Catégories</h3>
+                        <div class="space-y-2 scroll-animation">
+                            <label class="custom-checkbox">
+                                Tous les produits
+                                <input type="checkbox" checked>
+                                <span class="checkmark"></span>
+                            </label>
+                            <label class="custom-checkbox">
+                                Formules spéciales
+                                <input type="checkbox">
+                                <span class="checkmark"></span>
+                            </label>
+                            <label class="custom-checkbox">
+                                Œufs
+                                <input type="checkbox">
+                                <span class="checkmark"></span>
+                            </label>
+                            <label class="custom-checkbox">
+                                Escargots
+                                <input type="checkbox">
+                                <span class="checkmark"></span>
+                            </label>
+                            <label class="custom-checkbox">
+                                Poulets de chairs
+                                <input type="checkbox">
+                                <span class="checkmark"></span>
+                            </label>
+                            <label class="custom-checkbox">
+                                Porc
+                                <input type="checkbox">
+                                <span class="checkmark"></span>
+                            </label>
+                        </div>
+                    </div>
+
+
+                    <!-- Certification -->
+                    <!-- <div class="mb-6">
+                        <h3 class="text-lg font-semibold mb-3">Certification</h3>
+                        <div class="space-y-2">
+                            <label class="custom-checkbox">
+                                Bio
+                                <input type="checkbox">
+                                <span class="checkmark"></span>
+                            </label>
+                            <label class="custom-checkbox">
+                                Premium
+                                <input type="checkbox">
+                                <span class="checkmark"></span>
+                            </label>
+                            <label class="custom-checkbox">
+                                Gourmet
+                                <input type="checkbox">
+                                <span class="checkmark"></span>
+                            </label>
+                        </div>
+                    </div> -->
+
+                    <!-- Reset Filters -->
+                    <button class="w-full bg-gray-100 text-gray-700 px-4 py-2 rounded-button font-medium hover:bg-gray-200 transition-colors whitespace-nowrap scroll-animation">
+                        Rechercher
+                    </button>
+                </aside>
+
+                <!-- Products Content -->
+                <div class="md:w-3/4">
+                    <!-- Sort and Filter Bar -->
+                    <div class="bg-white p-4 rounded-lg shadow-md mb-6 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 scroll-animation">
+                        <div class="flex items-center">
+                            <span class="text-gray-600 mr-3">Trier par:</span>
+                            <select class="sort-select bg-white border border-gray-200 rounded-button px-3 py-2 focus:outline-none focus:border-primary text-sm">
+                                <option value="price-asc">Prix: croissant</option>
+                                <option value="price-desc">Prix: décroissant</option>
+                            </select>
+                        </div>
+                        <div class="flex items-center text-sm text-gray-600">
+                            <span>Affichage 1-8 sur 36 produits</span>
+                        </div>
+                    </div>
+
+                    <!-- Products Grid -->
+                    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+                        <!-- Product 1 -->
+                        <div class="product-card bg-white rounded-lg shadow-md overflow-hidden transition-all duration-300 scroll-animation">
+                            <div class="h-48 overflow-hidden">
+                                <img src="assets/img/bananes.jpg" alt="Bananes Cavendish" class="w-full h-full object-cover object-top">
+                            </div>
+                            <div class="p-4">
+                                <div class="flex justify-between items-start mb-2">
+                                    <h3 class="font-semibold text-lg">Bananes Cavendish</h3>
+                                </div>
+                                <p class="text-gray-600 text-sm mb-3">Bananes fraîches cultivées sans pesticides, riches en potassium et vitamines.</p>
+                                <div class="flex flex-col justify-center items-center gap-3">
+                                    <span class="text-lg font-bold">500 fcfa<span class="text-sm font-normal text-gray-500">/kg</span></span>
+                                    <a href="details.html" class="bg-primary text-white p-2 rounded-button hover:bg-opacity-90 transition-colors whitespace-nowrap">
+                                        <div class="flex items-center">
+                                            <div class="w-5 h-5 flex items-center justify-center mr-1">
+                                                <i class="ri-shopping-cart-line"></i>
+                                            </div>
+                                            <span>Ajouter</span>
+                                        </div>
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Product 2 -->
+                        <div class="product-card bg-white rounded-lg shadow-md overflow-hidden transition-all duration-300 scroll-animation">
+                            <div class="h-48 overflow-hidden">
+                                <img src="assets/img/oeuf.jpg" alt="Œufs Fermiers" class="w-full h-full object-cover object-top">
+                            </div>
+                            <div class="p-4">
+                                <div class="flex justify-between items-start mb-2">
+                                    <h3 class="font-semibold text-lg">Œufs Fermiers</h3>
+                                </div>
+                                <p class="text-gray-600 text-sm mb-3">Œufs frais de poules élevées en plein air, nourries aux grains biologiques.</p>
+                                <div class="flex flex-col justify-center items-center gap-3">
+                                    <span class="text-lg font-bold">2500 fcfa<span class="text-sm font-normal text-gray-500">/plateau de 30</span></span>
+                                    <a href="details.html" class="bg-primary text-white p-2 rounded-button hover:bg-opacity-90 transition-colors whitespace-nowrap">
+                                        <div class="flex items-center">
+                                            <div class="w-5 h-5 flex items-center justify-center mr-1">
+                                                <i class="ri-shopping-cart-line"></i>
+                                            </div>
+                                            <span>Ajouter</span>
+                                        </div>
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Product 3 -->
+                        <div class="product-card bg-white rounded-lg shadow-md overflow-hidden transition-all duration-300 scroll-animation">
+                            <div class="h-48 overflow-hidden">
+                                <img src="assets/img/escargot.jpg" alt="Escargots Précuits" class="w-full h-full object-cover object-top">
+                            </div>
+                            <div class="p-4">
+                                <div class="flex justify-between items-start mb-2">
+                                    <h3 class="font-semibold text-lg">Escargots Précuits</h3>
+                                </div>
+                                <p class="text-gray-600 text-sm mb-3">Escargots élevés naturellement, précuits et prêts à être cuisinés.</p>
+                                <div class="flex flex-col justify-center items-center gap-3">
+                                    <span class="text-lg font-bold">9500 fcfa<span class="text-sm font-normal text-gray-500">/40 unités</span></span>
+                                    <a href="details.html" class="bg-primary text-white p-2 rounded-button hover:bg-opacity-90 transition-colors whitespace-nowrap">
+                                        <div class="flex items-center">
+                                            <div class="w-5 h-5 flex items-center justify-center mr-1">
+                                                <i class="ri-shopping-cart-line"></i>
+                                            </div>
+                                            <span>Ajouter</span>
+                                        </div>
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Product 4 -->
+                        <div class="product-card bg-white rounded-lg shadow-md overflow-hidden transition-all duration-300 scroll-animation">
+                            <div class="h-48 overflow-hidden">
+                                <img src="assets/img/porc.jpg" alt="Porc Fermier" class="w-full h-full object-cover object-top">
+                            </div>
+                            <div class="p-4">
+                                <div class="flex justify-between items-start mb-2">
+                                    <h3 class="font-semibold text-lg">Porc Fermier</h3>
+                                </div>
+                                <p class="text-gray-600 text-sm mb-3">Viande de porc issue d'élevage traditionnel, nourri aux céréales de la ferme.</p>
+                                <div class="flex flex-col justify-center items-center gap-3">
+                                    <span class="text-lg font-bold">1200 fcfa<span class="text-sm font-normal text-gray-500">/kg poids vif</span></span>
+                                    <a href="details.html" class="bg-primary text-white p-2 rounded-button hover:bg-opacity-90 transition-colors whitespace-nowrap">
+                                        <div class="flex items-center">
+                                            <div class="w-5 h-5 flex items-center justify-center mr-1">
+                                                <i class="ri-shopping-cart-line"></i>
+                                            </div>
+                                            <span>Ajouter</span>
+                                        </div>
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+
+
+                        <!-- Product 1 -->
+                        <div class="product-card bg-white rounded-lg shadow-md overflow-hidden transition-all duration-300 scroll-animation">
+                            <div class="h-48 overflow-hidden">
+                                <img src="assets/img/bananes.jpg" alt="Bananes Cavendish" class="w-full h-full object-cover object-top">
+                            </div>
+                            <div class="p-4">
+                                <div class="flex justify-between items-start mb-2">
+                                    <h3 class="font-semibold text-lg">Bananes Cavendish</h3>
+                                </div>
+                                <p class="text-gray-600 text-sm mb-3">Bananes fraîches cultivées sans pesticides, riches en potassium et vitamines.</p>
+                                <div class="flex flex-col justify-center items-center gap-3">
+                                    <span class="text-lg font-bold">500 fcfa<span class="text-sm font-normal text-gray-500">/kg</span></span>
+                                    <a href="details.html" class="bg-primary text-white p-2 rounded-button hover:bg-opacity-90 transition-colors whitespace-nowrap">
+                                        <div class="flex items-center">
+                                            <div class="w-5 h-5 flex items-center justify-center mr-1">
+                                                <i class="ri-shopping-cart-line"></i>
+                                            </div>
+                                            <span>Ajouter</span>
+                                        </div>
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Product 2 -->
+                        <div class="product-card bg-white rounded-lg shadow-md overflow-hidden transition-all duration-300 scroll-animation">
+                            <div class="h-48 overflow-hidden">
+                                <img src="assets/img/oeuf.jpg" alt="Œufs Fermiers" class="w-full h-full object-cover object-top">
+                            </div>
+                            <div class="p-4">
+                                <div class="flex justify-between items-start mb-2">
+                                    <h3 class="font-semibold text-lg">Œufs Fermiers</h3>
+                                </div>
+                                <p class="text-gray-600 text-sm mb-3">Œufs frais de poules élevées en plein air, nourries aux grains biologiques.</p>
+                                <div class="flex flex-col justify-center items-center gap-3">
+                                    <span class="text-lg font-bold">2500 fcfa<span class="text-sm font-normal text-gray-500">/plateau de 30</span></span>
+                                    <a href="details.html" class="bg-primary text-white p-2 rounded-button hover:bg-opacity-90 transition-colors whitespace-nowrap">
+                                        <div class="flex items-center">
+                                            <div class="w-5 h-5 flex items-center justify-center mr-1">
+                                                <i class="ri-shopping-cart-line"></i>
+                                            </div>
+                                            <span>Ajouter</span>
+                                        </div>
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Product 3 -->
+                        <div class="product-card bg-white rounded-lg shadow-md overflow-hidden transition-all duration-300 scroll-animation">
+                            <div class="h-48 overflow-hidden">
+                                <img src="assets/img/escargot.jpg" alt="Escargots Précuits" class="w-full h-full object-cover object-top">
+                            </div>
+                            <div class="p-4">
+                                <div class="flex justify-between items-start mb-2">
+                                    <h3 class="font-semibold text-lg">Escargots Précuits</h3>
+                                </div>
+                                <p class="text-gray-600 text-sm mb-3">Escargots élevés naturellement, précuits et prêts à être cuisinés.</p>
+                                <div class="flex flex-col justify-center items-center gap-3">
+                                    <span class="text-lg font-bold">9500 fcfa<span class="text-sm font-normal text-gray-500">/40 unités</span></span>
+                                    <a href="details.html" class="bg-primary text-white p-2 rounded-button hover:bg-opacity-90 transition-colors whitespace-nowrap">
+                                        <div class="flex items-center">
+                                            <div class="w-5 h-5 flex items-center justify-center mr-1">
+                                                <i class="ri-shopping-cart-line"></i>
+                                            </div>
+                                            <span>Ajouter</span>
+                                        </div>
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Product 4 -->
+                        <div class="product-card bg-white rounded-lg shadow-md overflow-hidden transition-all duration-300 scroll-animation">
+                            <div class="h-48 overflow-hidden">
+                                <img src="assets/img/porc.jpg" alt="Porc Fermier" class="w-full h-full object-cover object-top">
+                            </div>
+                            <div class="p-4">
+                                <div class="flex justify-between items-start mb-2">
+                                    <h3 class="font-semibold text-lg">Porc Fermier</h3>
+                                </div>
+                                <p class="text-gray-600 text-sm mb-3">Viande de porc issue d'élevage traditionnel, nourri aux céréales de la ferme.</p>
+                                <div class="flex flex-col justify-center items-center gap-3">
+                                    <span class="text-lg font-bold">1200 fcfa<span class="text-sm font-normal text-gray-500">/kg poids vif</span></span>
+                                    <a href="details.html" class="bg-primary text-white p-2 rounded-button hover:bg-opacity-90 transition-colors whitespace-nowrap">
+                                        <div class="flex items-center">
+                                            <div class="w-5 h-5 flex items-center justify-center mr-1">
+                                                <i class="ri-shopping-cart-line"></i>
+                                            </div>
+                                            <span>Ajouter</span>
+                                        </div>
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                        
+
+                    </div>
+
+                    <!-- Pagination -->
+                    <div class="flex justify-center mt-10 scroll-animation">
+                        <div class="flex items-center space-x-2">
+                            <button class="pagination-btn border border-gray-200 text-gray-600 hover:border-primary hover:text-primary">
+                                <div class="w-5 h-5 flex items-center justify-center">
+                                    <i class="ri-arrow-left-s-line"></i>
+                                </div>
+                            </button>
+                            <button class="pagination-btn active">1</button>
+                            <button class="pagination-btn border border-gray-200 text-gray-600 hover:border-primary hover:text-primary">2</button>
+                            <button class="pagination-btn border border-gray-200 text-gray-600 hover:border-primary hover:text-primary">3</button>
+                            <button class="pagination-btn border border-gray-200 text-gray-600 hover:border-primary hover:text-primary">
+                                <div class="w-5 h-5 flex items-center justify-center">
+                                    <i class="ri-arrow-right-s-line"></i>
+                                </div>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+
+    <!-- Footer -->
+    <footer class="bg-[#333333] text-white pt-12 pb-6">
+        <div class="container mx-auto px-4">
+          <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 mb-8">
+            <!-- Column 1 -->
+            <div>
+              <a
+                href="#"
+                class="text-3xl font-['Pacifico'] text-white mb-4 inline-block"
+                >EDENIA</a
+              >
+              <p class="text-gray-300 mb-4">
+                Délices des champs, directement de notre ferme à votre table. Des
+                produits frais, sains et savoureux cultivés avec passion.
+              </p>
+              <div class="flex space-x-4">
+                <a
+                  href="#"
+                  class="w-10 h-10 bg-white bg-opacity-10 rounded-full flex items-center justify-center hover:bg-primary transition-colors"
+                >
+                  <div class="w-5 h-5 flex items-center justify-center">
+                    <i class="ri-facebook-fill text-white"></i>
+                  </div>
+                </a>
+                <a
+                  href="#"
+                  class="w-10 h-10 bg-white bg-opacity-10 rounded-full flex items-center justify-center hover:bg-primary transition-colors"
+                >
+                  <div class="w-5 h-5 flex items-center justify-center">
+                    <i class="ri-instagram-line text-white"></i>
+                  </div>
+                </a>
+                <a
+                  href="#"
+                  class="w-10 h-10 bg-white bg-opacity-10 rounded-full flex items-center justify-center hover:bg-primary transition-colors"
+                >
+                  <div class="w-5 h-5 flex items-center justify-center">
+                    <i class="ri-twitter-x-line text-white"></i>
+                  </div>
+                </a>
+              </div>
+            </div>
+            <!-- Column 2 -->
+            <div>
+              <h3 class="text-lg font-semibold mb-4">Liens Rapides</h3>
+              <ul class="space-y-2">
+                <li>
+                  <a
+                    href="#"
+                    class="text-gray-300 hover:text-white transition-colors"
+                    >Accueil</a
+                  >
+                </li>
+                <li>
+                  <a
+                    href="#products"
+                    class="text-gray-300 hover:text-white transition-colors"
+                    >Nos Produits</a
+                  >
+                </li>
+                <li>
+                  <a
+                    href="#stages"
+                    class="text-gray-300 hover:text-white transition-colors"
+                    >Stages</a
+                  >
+                </li>
+                <li>
+                  <a
+                    href="#contact"
+                    class="text-gray-300 hover:text-white transition-colors"
+                    >Contact</a
+                  >
+                </li>
+                <li>
+                  <a
+                    href="#"
+                    class="text-gray-300 hover:text-white transition-colors"
+                    >À Propos</a
+                  >
+                </li>
+              </ul>
+            </div>
+            <!-- Column 3 -->
+            <div>
+              <h3 class="text-lg font-semibold mb-4">Nos Produits</h3>
+              <ul class="space-y-2">
+                <li>
+                  <a
+                    href="#"
+                    class="text-gray-300 hover:text-white transition-colors"
+                    >Bananes Cavendish</a
+                  >
+                </li>
+                <li>
+                  <a
+                    href="#"
+                    class="text-gray-300 hover:text-white transition-colors"
+                    >Œufs Fermiers</a
+                  >
+                </li>
+                <li>
+                  <a
+                    href="#"
+                    class="text-gray-300 hover:text-white transition-colors"
+                    >Escargots Précuits</a
+                  >
+                </li>
+                <li>
+                  <a
+                    href="#"
+                    class="text-gray-300 hover:text-white transition-colors"
+                    >Porc Fermier</a
+                  >
+                </li>
+                <li>
+                  <a
+                    href="#"
+                    class="text-gray-300 hover:text-white transition-colors"
+                    >Formules spéciales</a
+                  >
+                </li>
+              </ul>
+            </div>
+            <!-- Column 4 -->
+            <div>
+              <h3 class="text-lg font-semibold mb-4">Newsletter</h3>
+              <p class="text-gray-300 mb-4">
+                Inscrivez-vous pour recevoir nos actualités et offres spéciales.
+              </p>
+              <form>
+                <div class="flex mb-3">
+                  <input
+                    type="email"
+                    placeholder="Votre email"
+                    class="bg-white bg-opacity-10 text-white px-4 py-2 rounded-l-button w-full focus:outline-none border-none"
+                    style="min-width: 0"
+                  />
+                  <button
+                    type="submit"
+                    class="bg-[#FF9800] text-white px-4 py-2 rounded-r-button hover:bg-opacity-90 transition-colors whitespace-nowrap"
+                  >
+                    S'inscrire
+                  </button>
+                </div>
+                <label class="custom-checkbox flex items-center">
+                  <span class="ml-7 text-gray-300 text-sm"
+                    >J'accepte de recevoir la newsletter</span
+                  >
+                  <input type="checkbox" />
+                  <span class="checkmark border-gray-500"></span>
+                </label>
+              </form>
+            </div>
+          </div>
+          <div class="border-t border-gray-700 pt-6 mt-6">
+            <div class="flex flex-col md:flex-row justify-between items-center">
+              <p class="text-gray-400 text-sm mb-4 md:mb-0">
+                &copy; 2025 EDENIA - Délices des champs. Tous droits réservés.
+              </p>
+              <div class="flex flex-wrap gap-4 text-sm text-gray-400">
+                <a href="#" class="hover:text-white transition-colors"
+                  >Mentions Légales</a
+                >
+                <a href="#" class="hover:text-white transition-colors"
+                  >Politique de Confidentialité</a
+                >
+                <a href="#" class="hover:text-white transition-colors">CGV</a>
+              </div>
+            </div>
+          </div>
+        </div>
+    </footer>
+
+    <!-- Back to Top Button -->
+    <button
+      id="back-to-top"
+      class="back-to-top fixed bottom-6 right-6 bg-primary text-white p-3 rounded-full shadow-lg z-50"
+    >
+      <div class="w-6 h-6 flex items-center justify-center">
+        <i class="ri-arrow-up-line"></i>
+      </div>
+    </button>
+
+    <!-- Scripts -->
+    <script id="mobile-menu-script">
+        document.addEventListener('DOMContentLoaded', function() {
+            const mobileMenuButton = document.getElementById('mobile-menu-button');
+            const mobileMenu = document.getElementById('mobile-menu');
+            
+            mobileMenuButton.addEventListener('click', function() {
+                mobileMenu.classList.toggle('hidden');
+                if (mobileMenu.classList.contains('hidden')) {
+                    mobileMenuButton.innerHTML = '<i class="ri-menu-line ri-lg text-gray-600"></i>';
+                } else {
+                    mobileMenuButton.innerHTML = '<i class="ri-close-line ri-lg text-gray-600"></i>';
+                }
+            });
+            
+            // Close mobile menu when clicking on a link
+            const mobileLinks = mobileMenu.querySelectorAll('a');
+            mobileLinks.forEach(link => {
+                link.addEventListener('click', function() {
+                    mobileMenu.classList.add('hidden');
+                    mobileMenuButton.innerHTML = '<i class="ri-menu-line ri-lg text-gray-600"></i>';
+                });
+            });
+        });
+    </script>
+
+    <script id="price-range-script">
+        document.addEventListener('DOMContentLoaded', function() {
+            const priceRange = document.getElementById('price-range');
+            const priceValue = document.getElementById('price-value');
+            
+            priceRange.addEventListener('input', function() {
+                priceValue.textContent = this.value + ' €';
+            });
+        });
+    </script>
+
+    <script id="filter-toggle-script">
+        document.addEventListener('DOMContentLoaded', function() {
+            const filterToggle = document.getElementById('filter-toggle');
+            const filtersSidebar = document.getElementById('filters-sidebar');
+            const filterOverlay = document.getElementById('filter-overlay');
+            const closeFilter = document.getElementById('close-filter');
+            
+            filterToggle.addEventListener('click', function() {
+                filtersSidebar.classList.add('active');
+                filterOverlay.classList.add('active');
+                document.body.style.overflow = 'hidden';
+            });
+            
+            function closeFilters() {
+                filtersSidebar.classList.remove('active');
+                filterOverlay.classList.remove('active');
+                document.body.style.overflow = '';
+            }
+            
+            closeFilter.addEventListener('click', closeFilters);
+            filterOverlay.addEventListener('click', closeFilters);
+        });
+    </script>
+
+    <script id="back-to-top-script">
+        document.addEventListener("DOMContentLoaded", function () {
+        const backToTopButton = document.getElementById("back-to-top");
+        function toggleBackToTopButton() {
+            if (window.pageYOffset > 300) {
+            backToTopButton.classList.add("visible");
+            } else {
+            backToTopButton.classList.remove("visible");
+            }
+        }
+        backToTopButton.addEventListener("click", function () {
+            window.scrollTo({
+            top: 0,
+            behavior: "smooth",
+            });
+        });
+        window.addEventListener("scroll", toggleBackToTopButton);
+        toggleBackToTopButton();
+        });
+    </script>
+
+    <script id="scroll-animation-script">
+        document.addEventListener("DOMContentLoaded", function () {
+        const scrollAnimations = document.querySelectorAll(".scroll-animation");
+        function checkScroll() {
+            scrollAnimations.forEach((animation) => {
+            const animationPosition = animation.getBoundingClientRect().top;
+            const screenPosition = window.innerHeight / 1.2;
+            if (animationPosition < screenPosition) {
+                animation.classList.add("active");
+            }
+            });
+        }
+        // Initial check
+        checkScroll();
+        // Check on scroll
+        window.addEventListener("scroll", checkScroll);
+        });
+    </script>
+</body>
+</html>

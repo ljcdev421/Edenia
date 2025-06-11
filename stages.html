@@ -1,0 +1,1181 @@
+<!DOCTYPE html>
+<html lang="fr">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>EDENIA - Tous nos stages</title>
+    <script src="https://cdn.tailwindcss.com/3.4.16"></script>
+    <script>
+      tailwind.config = {
+        theme: {
+          extend: {
+            colors: { primary: "#2E7D32", secondary: "#795548" },
+            borderRadius: {
+              none: "0px",
+              sm: "4px",
+              DEFAULT: "8px",
+              md: "12px",
+              lg: "16px",
+              xl: "20px",
+              "2xl": "24px",
+              "3xl": "32px",
+              full: "9999px",
+              button: "8px",
+            },
+          },
+        },
+      };
+    </script>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Pacifico&display=swap"
+      rel="stylesheet"
+    />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/remixicon/4.6.0/remixicon.min.css"
+    />
+    <style>
+      :where([class^="ri-"])::before {
+        content: "\f3c2";
+      }
+      body {
+        font-family: "Montserrat", sans-serif;
+        scroll-behavior: smooth;
+      }
+      .search-input:focus {
+        outline: none;
+      }
+      .stage-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1);
+      }
+      input[type="number"]::-webkit-inner-spin-button,
+      input[type="number"]::-webkit-outer-spin-button {
+        -webkit-appearance: none;
+        margin: 0;
+      }
+      .custom-checkbox {
+        position: relative;
+        cursor: pointer;
+      }
+      .custom-checkbox input {
+        position: absolute;
+        opacity: 0;
+        cursor: pointer;
+      }
+      .checkmark {
+        position: absolute;
+        top: 0;
+        left: 0;
+        height: 20px;
+        width: 20px;
+        background-color: #fff;
+        border: 2px solid #ccc;
+        border-radius: 4px;
+      }
+      .custom-checkbox:hover input ~ .checkmark {
+        border-color: #2e7d32;
+      }
+      .custom-checkbox input:checked ~ .checkmark {
+        background-color: #2e7d32;
+        border-color: #2e7d32;
+      }
+      .checkmark:after {
+        content: "";
+        position: absolute;
+        display: none;
+      }
+      .custom-checkbox input:checked ~ .checkmark:after {
+        display: block;
+      }
+      .custom-checkbox .checkmark:after {
+        left: 6px;
+        top: 2px;
+        width: 5px;
+        height: 10px;
+        border: solid white;
+        border-width: 0 2px 2px 0;
+        transform: rotate(45deg);
+      }
+      .filter-dropdown {
+        max-height: 0;
+        overflow: hidden;
+        transition: max-height 0.3s ease-out;
+      }
+      .filter-dropdown.open {
+        max-height: 500px;
+      }
+      .filter-toggle.active i {
+        transform: rotate(180deg);
+      }
+      .accordion-content {
+        max-height: 0;
+        overflow: hidden;
+        transition: max-height 0.3s ease-out;
+      }
+      .accordion-button.active i {
+        transform: rotate(180deg);
+      }
+      .accordion-content.open {
+        max-height: 500px;
+      }
+    </style>
+  </head>
+  <body class="bg-[#F5F5F5] text-[#333333]">
+    <!-- Header -->
+    <header class="fixed w-full bg-white shadow-md z-50">
+      <div
+        class="container mx-auto px-4 py-3 flex justify-between items-center"
+      >
+        <div class="flex items-center">
+          <a href="#" class="text-3xl font-['Pacifico'] text-primary">EDENIA</a>
+          <span class="hidden md:inline-block ml-2 text-sm text-gray-500"
+            >Délices des champs</span
+          >
+        </div>
+        <!-- Desktop Navigation -->
+        <nav class="hidden md:flex items-center space-x-6">
+          <a
+            href="index.html"
+            class="font-medium hover:text-primary transition-colors"
+            >Accueil</a
+          >
+          <a
+            href="produits.html"
+            class="font-medium hover:text-primary transition-colors"
+            >Produits</a
+          >
+          <a
+            href="apropos.html"
+            class="font-medium hover:text-primary transition-colors"
+            >A propos</a
+          >
+          <a
+            href="stages.html"
+            class="font-medium text-primary border-b-2 border-primary"
+            >Stages</a
+          >
+          <a
+            href="contact.html"
+            class="font-medium hover:text-primary transition-colors"
+            >Contact</a
+          >
+        </nav>
+        <!-- Icons -->
+        <div class="flex items-center space-x-4">
+          <div class="relative w-8 h-8 flex items-center justify-center">
+            <a href="panier.html">
+              <i
+                class="ri-shopping-cart-2-line ri-lg text-gray-600 cursor-pointer hover:text-primary transition-colors"
+              ></i>
+              <span
+                class="absolute -top-1 -right-1 bg-[#FF9800] text-white text-xs w-5 h-5 flex items-center justify-center rounded-full"
+                >3</span
+              >
+            </a>
+          </div>
+          <div class="relative w-8 h-8 flex items-center justify-center">
+            <a href="connexion.html">
+              <i
+                class="ri-user-line ri-lg text-gray-600 cursor-pointer hover:text-primary transition-colors"
+              ></i>
+            </a>
+          </div>
+          <!-- Mobile Menu Button -->
+          <button
+            class="md:hidden w-8 h-8 flex items-center justify-center"
+            id="mobile-menu-button"
+          >
+            <i class="ri-menu-line ri-lg text-gray-600"></i>
+          </button>
+        </div>
+      </div>
+      <!-- Mobile Navigation -->
+      <div
+        class="md:hidden bg-white absolute w-full left-0 top-full shadow-md hidden"
+        id="mobile-menu"
+      >
+        <div class="container mx-auto px-4 py-3 flex flex-col space-y-3">
+          <a
+            href="index.html"
+            class="font-medium py-2 hover:text-primary transition-colors"
+            >Accueil</a
+          >
+          <a
+            href="produits.html"
+            class="font-medium py-2 hover:text-primary transition-colors"
+            >Produits</a
+          >
+          <a
+            href="apropos.html"
+            class="font-medium py-2 hover:text-primary transition-colors"
+            >A propos</a
+          >
+          <a
+            href="stages.html"
+            class="font-medium py-2 hover:text-primary transition-colors"
+            >Stages</a
+          >
+          <a
+            href="contact.html"
+            class="font-medium py-2 hover:text-primary transition-colors"
+            >Contact</a
+          >
+        </div>
+      </div>
+    </header>
+
+    <!-- Page Title Section -->
+    <section class="pt-24 pb-8 bg-white">
+      <div class="container mx-auto px-4">
+        <div class="flex flex-col items-center text-center">
+          <h1 class="text-3xl md:text-4xl font-bold mb-4 text-primary">
+            Tous nos stages
+          </h1>
+          <p class="text-gray-600 max-w-2xl">
+            Découvrez nos stages pratiques pour apprendre les techniques
+            d'agriculture durable et d'élevage responsable.
+          </p>
+          <div class="flex items-center text-sm text-gray-500 mt-4">
+            <a
+              href="index.html"
+              data-readdy="true"
+              class="hover:text-primary transition-colors"
+              >Accueil</a
+            >
+            <span class="mx-2">/</span>
+            <span class="text-primary">Stages</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Search and Filter Section -->
+    <section class="py-6 bg-white border-b border-gray-200 scroll-animation">
+      <div class="container mx-auto px-4">
+        <div
+          class="flex flex-col md:flex-row justify-center items-center gap-4"
+        >
+          <!-- Search Bar -->
+          <div class="w-full md:w-1/3">
+            <div class="relative">
+              <input
+                type="text"
+                class="search-input w-full px-4 py-3 border border-gray-200 rounded-button focus:border-primary"
+                placeholder="Rechercher un stage..."
+              />
+              <div
+                class="absolute right-3 top-1/2 transform -translate-y-1/2 w-6 h-6 flex items-center justify-center"
+              >
+                <i class="ri-search-line text-gray-400"></i>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Stages Grid Section -->
+    <section class="py-12">
+      <div class="container mx-auto px-4">
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          <!-- Stage 1 -->
+          <div
+            class="stage-card bg-white rounded-lg shadow-md overflow-hidden transition-all duration-300 scroll-animation"
+          >
+            <div class="h-48 overflow-hidden">
+              <img
+                src="https://readdy.ai/api/search-image?query=students%2520learning%2520about%2520banana%2520cultivation%2520in%2520a%2520farm%252C%2520educational%2520setting%252C%2520people%2520examining%2520banana%2520plants%252C%2520bright%2520natural%2520lighting%252C%2520outdoor%2520agricultural%2520training%252C%2520professional%2520photography%252C%2520clean%2520composition&width=400&height=300&seq=1&orientation=landscape"
+                alt="Stage Culture de Bananes"
+                class="w-full h-full object-cover object-top"
+              />
+            </div>
+            <div class="p-5">
+              <div class="flex justify-between items-start mb-2">
+                <h3 class="font-semibold text-xl">Culture de Bananes</h3>
+              </div>
+              <p class="text-gray-600 mb-4">
+                Apprenez les techniques de culture de la banane Cavendish, de la
+                plantation à la récolte, en passant par les soins spécifiques et
+                la gestion des maladies.
+              </p>
+            </div>
+          </div>
+
+          <!-- Stage 2 -->
+          <div
+            class="stage-card bg-white rounded-lg shadow-md overflow-hidden transition-all duration-300 scroll-animation"
+          >
+            <div class="h-48 overflow-hidden">
+              <img
+                src="https://readdy.ai/api/search-image?query=students%2520learning%2520about%2520poultry%2520farming%252C%2520people%2520caring%2520for%2520chickens%2520in%2520a%2520free-range%2520environment%252C%2520educational%2520setting%252C%2520bright%2520natural%2520lighting%252C%2520outdoor%2520agricultural%2520training%252C%2520professional%2520photography%252C%2520clean%2520composition&width=400&height=300&seq=2&orientation=landscape"
+                alt="Stage Élevage de Poules"
+                class="w-full h-full object-cover object-top"
+              />
+            </div>
+            <div class="p-5">
+              <div class="flex justify-between items-start mb-2">
+                <h3 class="font-semibold text-xl">Élevage de Poules</h3>
+              </div>
+              <p class="text-gray-600 mb-4">
+                Découvrez les méthodes d'élevage de poules pondeuses en plein
+                air, leur alimentation biologique et les soins quotidiens
+                nécessaires à leur bien-être.
+              </p>
+            </div>
+          </div>
+
+          <!-- Stage 3 -->
+          <div
+            class="stage-card bg-white rounded-lg shadow-md overflow-hidden transition-all duration-300 scroll-animation"
+          >
+            <div class="h-48 overflow-hidden">
+              <img
+                src="https://readdy.ai/api/search-image?query=students%2520learning%2520about%2520snail%2520farming%252C%2520people%2520examining%2520snail%2520habitats%252C%2520educational%2520setting%252C%2520bright%2520natural%2520lighting%252C%2520indoor%2520agricultural%2520training%252C%2520professional%2520photography%252C%2520clean%2520composition&width=400&height=300&seq=3&orientation=landscape"
+                alt="Stage Héliciculture"
+                class="w-full h-full object-cover object-top"
+              />
+            </div>
+            <div class="p-5">
+              <div class="flex justify-between items-start mb-2">
+                <h3 class="font-semibold text-xl">Héliciculture</h3>
+              </div>
+              <p class="text-gray-600 mb-4">
+                Initiez-vous à l'élevage d'escargots, de la reproduction à la
+                préparation culinaire, en passant par l'entretien des parcs et
+                l'alimentation.
+              </p>
+            </div>
+          </div>
+
+          <!-- Stage 4 -->
+          <div
+            class="stage-card bg-white rounded-lg shadow-md overflow-hidden transition-all duration-300 scroll-animation"
+          >
+            <div class="h-48 overflow-hidden">
+              <img
+                src="https://readdy.ai/api/search-image?query=students%2520learning%2520about%2520pig%2520farming%252C%2520people%2520caring%2520for%2520pigs%2520in%2520a%2520natural%2520environment%252C%2520educational%2520setting%252C%2520bright%2520natural%2520lighting%252C%2520outdoor%2520agricultural%2520training%252C%2520professional%2520photography%252C%2520clean%2520composition&width=400&height=300&seq=4&orientation=landscape"
+                alt="Stage Élevage Porcin"
+                class="w-full h-full object-cover object-top"
+              />
+            </div>
+            <div class="p-5">
+              <div class="flex justify-between items-start mb-2">
+                <h3 class="font-semibold text-xl">Élevage Porcin</h3>
+              </div>
+              <p class="text-gray-600 mb-4">
+                Formez-vous à l'élevage de porcs en plein air, leur alimentation
+                naturelle et les techniques d'élevage responsable et durable.
+              </p>
+            </div>
+          </div>
+
+          <!-- Stage 5 -->
+          <div
+            class="stage-card bg-white rounded-lg shadow-md overflow-hidden transition-all duration-300 scroll-animation"
+          >
+            <div class="h-48 overflow-hidden">
+              <img
+                src="https://readdy.ai/api/search-image?query=students%2520learning%2520about%2520cheese%2520making%252C%2520people%2520in%2520a%2520workshop%2520preparing%2520traditional%2520cheese%252C%2520educational%2520setting%252C%2520bright%2520natural%2520lighting%252C%2520indoor%2520culinary%2520training%252C%2520professional%2520photography%252C%2520clean%2520composition&width=400&height=300&seq=5&orientation=landscape"
+                alt="Stage Fabrication de Fromage"
+                class="w-full h-full object-cover object-top"
+              />
+            </div>
+            <div class="p-5">
+              <div class="flex justify-between items-start mb-2">
+                <h3 class="font-semibold text-xl">Fabrication de Fromage</h3>
+              </div>
+              <p class="text-gray-600 mb-4">
+                Apprenez à fabriquer vos propres fromages fermiers à partir de
+                lait cru, des techniques traditionnelles aux méthodes modernes.
+              </p>
+            </div>
+          </div>
+
+          <!-- Stage 6 -->
+          <div
+            class="stage-card bg-white rounded-lg shadow-md overflow-hidden transition-all duration-300 scroll-animation"
+          >
+            <div class="h-48 overflow-hidden">
+              <img
+                src="https://readdy.ai/api/search-image?query=students%2520learning%2520about%2520permaculture%252C%2520people%2520working%2520in%2520a%2520diverse%2520garden%2520with%2520vegetables%2520and%2520fruit%2520trees%252C%2520educational%2520setting%252C%2520bright%2520natural%2520lighting%252C%2520outdoor%2520agricultural%2520training%252C%2520professional%2520photography%252C%2520clean%2520composition&width=400&height=300&seq=6&orientation=landscape"
+                alt="Stage Permaculture"
+                class="w-full h-full object-cover object-top"
+              />
+            </div>
+            <div class="p-5">
+              <div class="flex justify-between items-start mb-2">
+                <h3 class="font-semibold text-xl">Permaculture</h3>
+              </div>
+              <p class="text-gray-600 mb-4">
+                Découvrez les principes de la permaculture et apprenez à
+                concevoir un jardin productif, durable et respectueux de
+                l'environnement.
+              </p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Pagination -->
+        <div class="mt-10 flex justify-center scroll-animation">
+          <nav class="flex items-center space-x-2">
+            <a
+              href="#"
+              class="w-10 h-10 flex items-center justify-center rounded-full border border-gray-300 text-gray-600 hover:border-primary hover:text-primary transition-colors"
+            >
+              <div class="w-5 h-5 flex items-center justify-center">
+                <i class="ri-arrow-left-s-line"></i>
+              </div>
+            </a>
+            <a
+              href="#"
+              class="w-10 h-10 flex items-center justify-center rounded-full bg-primary text-white"
+              >1</a
+            >
+            <a
+              href="#"
+              class="w-10 h-10 flex items-center justify-center rounded-full border border-gray-300 text-gray-600 hover:border-primary hover:text-primary transition-colors"
+              >2</a
+            >
+            <a
+              href="#"
+              class="w-10 h-10 flex items-center justify-center rounded-full border border-gray-300 text-gray-600 hover:border-primary hover:text-primary transition-colors"
+              >3</a
+            >
+            <span
+              class="w-10 h-10 flex items-center justify-center text-gray-600"
+              >...</span
+            >
+            <a
+              href="#"
+              class="w-10 h-10 flex items-center justify-center rounded-full border border-gray-300 text-gray-600 hover:border-primary hover:text-primary transition-colors"
+              >8</a
+            >
+            <a
+              href="#"
+              class="w-10 h-10 flex items-center justify-center rounded-full border border-gray-300 text-gray-600 hover:border-primary hover:text-primary transition-colors"
+            >
+              <div class="w-5 h-5 flex items-center justify-center">
+                <i class="ri-arrow-right-s-line"></i>
+              </div>
+            </a>
+          </nav>
+        </div>
+      </div>
+    </section>
+
+    <!-- FAQ Section -->
+    <section class="py-12 bg-white">
+      <div class="container mx-auto px-4">
+        <div class="text-center mb-10 scroll-animation">
+          <h2 class="text-3xl font-bold mb-3">Questions fréquentes</h2>
+          <p class="max-w-2xl mx-auto text-gray-600">
+            Tout ce que vous devez savoir sur nos stages et formations
+          </p>
+        </div>
+
+        <div class="max-w-3xl mx-auto">
+          <div class="space-y-4">
+            <!-- FAQ Item 1 -->
+            <div class="border border-gray-200 rounded-lg overflow-hidden scroll-animation">
+              <button
+                class="accordion-button w-full flex justify-between items-center p-4 bg-white hover:bg-gray-50 transition-colors"
+              >
+                <span class="font-medium text-left"
+                  >Comment se déroulent les stages ?</span
+                >
+                <div
+                  class="w-5 h-5 flex items-center justify-center transition-transform duration-300"
+                >
+                  <i class="ri-arrow-down-s-line"></i>
+                </div>
+              </button>
+              <div class="accordion-content">
+                <div class="p-4 pt-0 bg-white border-t border-gray-100">
+                  <p class="text-gray-600">
+                    Nos stages se déroulent directement sur notre ferme EDENIA.
+                    Chaque journée est divisée entre théorie et pratique. Le
+                    matin est généralement consacré aux aspects théoriques dans
+                    notre salle de formation, tandis que l'après-midi est dédié
+                    à la mise en pratique sur le terrain. Les groupes sont
+                    limités à 8-10 personnes pour garantir un apprentissage de
+                    qualité et un suivi personnalisé. Tous les outils et
+                    matériaux nécessaires sont fournis.
+                  </p>
+                </div>
+              </div>
+            </div>
+
+            <!-- FAQ Item 2 -->
+            <div class="border border-gray-200 rounded-lg overflow-hidden scroll-animation">
+              <button
+                class="accordion-button w-full flex justify-between items-center p-4 bg-white hover:bg-gray-50 transition-colors"
+              >
+                <span class="font-medium text-left"
+                  >Quels sont les prérequis pour participer ?</span
+                >
+                <div
+                  class="w-5 h-5 flex items-center justify-center transition-transform duration-300"
+                >
+                  <i class="ri-arrow-down-s-line"></i>
+                </div>
+              </button>
+              <div class="accordion-content">
+                <div class="p-4 pt-0 bg-white border-t border-gray-100">
+                  <p class="text-gray-600">
+                    Pour la plupart de nos stages de niveau débutant, aucun
+                    prérequis n'est nécessaire, juste de la motivation et de la
+                    curiosité ! Pour les stages de niveau intermédiaire ou
+                    avancé, des connaissances de base dans le domaine concerné
+                    sont recommandées. Certains stages nécessitent une bonne
+                    condition physique car ils impliquent des activités en
+                    extérieur. Tous les détails spécifiques sont mentionnés dans
+                    la description de chaque stage.
+                  </p>
+                </div>
+              </div>
+            </div>
+
+            <!-- FAQ Item 3 -->
+            <div class="border border-gray-200 rounded-lg overflow-hidden scroll-animation">
+              <button
+                class="accordion-button w-full flex justify-between items-center p-4 bg-white hover:bg-gray-50 transition-colors"
+              >
+                <span class="font-medium text-left"
+                  >L'hébergement est-il pris en charge ?</span
+                >
+                <div
+                  class="w-5 h-5 flex items-center justify-center transition-transform duration-300"
+                >
+                  <i class="ri-arrow-down-s-line"></i>
+                </div>
+              </button>
+              <div class="accordion-content">
+                <div class="p-4 pt-0 bg-white border-t border-gray-100">
+                  <p class="text-gray-600">
+                    L'hébergement n'est pas pris en charge pour nos stages.
+                    Cependant, nous proposons des options d'hébergement sur
+                    place dans notre gîte rural pour 5000 fcfa par nuit et par
+                    personne (petit-déjeuner inclus). Nous psouvons également
+                    vous recommander des hébergements à proximité pour tous les
+                    budgets. Les repas du midi sont inclus dans tous nos stages
+                    et sont préparés avec les produits de la ferme.
+                  </p>
+                </div>
+              </div>
+            </div>
+
+            <!-- FAQ Item 4 -->
+            <div class="border border-gray-200 rounded-lg overflow-hidden scroll-animation">
+              <button
+                class="accordion-button w-full flex justify-between items-center p-4 bg-white hover:bg-gray-50 transition-colors"
+              >
+                <span class="font-medium text-left"
+                  >Quel matériel dois-je apporter ?</span
+                >
+                <div
+                  class="w-5 h-5 flex items-center justify-center transition-transform duration-300"
+                >
+                  <i class="ri-arrow-down-s-line"></i>
+                </div>
+              </button>
+              <div class="accordion-content">
+                <div class="p-4 pt-0 bg-white border-t border-gray-100">
+                  <p class="text-gray-600">
+                    Tout le matériel technique nécessaire est fourni pendant le
+                    stage. Nous vous recommandons d'apporter des vêtements
+                    adaptés aux conditions météorologiques et aux activités en
+                    extérieur : chaussures fermées ou bottes, chapeau en été,
+                    vêtements de pluie si nécessaire. Pour les stages de
+                    plusieurs jours, un carnet de notes peut être utile. Une
+                    liste détaillée vous sera envoyée après votre inscription.
+                  </p>
+                </div>
+              </div>
+            </div>
+
+            <!-- FAQ Item 5 -->
+            <div class="border border-gray-200 rounded-lg overflow-hidden scroll-animation">
+              <button
+                class="accordion-button w-full flex justify-between items-center p-4 bg-white hover:bg-gray-50 transition-colors"
+              >
+                <span class="font-medium text-left"
+                  >Quelles sont les conditions d'annulation ?</span
+                >
+                <div
+                  class="w-5 h-5 flex items-center justify-center transition-transform duration-300"
+                >
+                  <i class="ri-arrow-down-s-line"></i>
+                </div>
+              </button>
+              <div class="accordion-content">
+                <div class="p-4 pt-0 bg-white border-t border-gray-100">
+                  <p class="text-gray-600">
+                    En cas d'annulation de votre part plus de 30 jours avant le
+                    début du stage, nous vous remboursons 90% du montant. Entre
+                    30 et 15 jours, le remboursement est de 50%. Pour une
+                    annulation moins de 15 jours avant le stage, aucun
+                    remboursement n'est possible, mais vous pouvez reporter
+                    votre participation à une date ultérieure dans l'année. Si
+                    nous devons annuler un stage, vous serez intégralement
+                    remboursé ou pourrez choisir une autre date.
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Call to Action -->
+    <section class="py-12 bg-primary bg-opacity-10">
+      <div class="container mx-auto px-4">
+        <div class="max-w-4xl mx-auto bg-white rounded-lg shadow-md p-8">
+          <div class="flex flex-col md:flex-row items-center">
+            <div class="w-full md:w-2/3 mb-6 md:mb-0 md:pr-8">
+              <h2 class="text-2xl font-bold mb-3 scroll-animation">
+                Vous avez des questions sur nos stages ?
+              </h2>
+              <p class="text-gray-600 mb-4 scroll-animation">
+                Notre équipe est disponible pour vous aider à choisir le stage
+                qui correspond le mieux à vos attentes et répondre à toutes vos
+                questions.
+              </p>
+              <div class="flex items-center mb-4">
+                <div
+                  class="w-10 h-10 bg-primary bg-opacity-10 rounded-full flex items-center justify-center mr-3 scroll-animation"
+                >
+                  <div
+                    class="w-5 h-5 flex items-center justify-center text-primary"
+                  >
+                    <i class="ri-phone-line"></i>
+                  </div>
+                </div>
+                <div>
+                  <div class="text-sm text-gray-500 scroll-animation">Appelez-nous</div>
+                  <div class="font-medium scroll-animation">+229 01 56 45 98 17</div>
+                </div>
+              </div>
+              <div class="flex items-center">
+                <div
+                  class="w-10 h-10 bg-primary bg-opacity-10 rounded-full flex items-center justify-center mr-3 scroll-animation"
+                >
+                  <div
+                    class="w-5 h-5 flex items-center justify-center text-primary"
+                  >
+                    <i class="ri-mail-line"></i>
+                  </div>
+                </div>
+                <div>
+                  <div class="text-sm text-gray-500 scroll-animation">Écrivez-nous</div>
+                  <div class="font-medium scroll-animation">contact@edenia.bj</div>
+                </div>
+              </div>
+            </div>
+            <div class="w-full md:w-1/3">
+              <a
+                href="contact.html"
+                class="w-full bg-primary text-white py-3 px-6 rounded-button font-medium hover:bg-opacity-90 transition-colors whitespace-nowrap mb-3 scroll-animation"
+              >
+                Demander un renseignement
+              </a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Inscription -->
+    <section class="bg-white py-16 px-4 sm:px-8 lg:px-20">
+      <div class="max-w-2xl mx-auto">
+        <h2 class="text-3xl font-bold mb-6 text-center scroll-animation">
+          Inscription à un stage
+        </h2>
+        <p class="text-gray-600 text-center mb-10 scroll-animation">
+          Remplissez le formulaire ci-dessous pour postuler à un stage au sein
+          de notre ferme EDENIA.
+        </p>
+
+        <form
+          action="#"
+          method="POST"
+          enctype="multipart/form-data"
+          class="space-y-6"
+        >
+          <div
+            class="flex flex-col md:flex-row md:gap-10 md:justify-center md:items-center"
+          >
+            <div class="w-1/2 space-y-6 scroll-animation">
+              <!-- Nom -->
+              <div>
+                <label class="block text-gray-700 font-semibold mb-2"
+                  >Nom complet</label
+                >
+                <input
+                  type="text"
+                  name="nom"
+                  placeholder="Votre nom"
+                  required
+                  class="w-full px-4 py-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
+                />
+              </div>
+
+              <!-- Email -->
+              <div>
+                <label class="block text-gray-700 font-semibold mb-2"
+                  >Adresse e-mail</label
+                >
+                <input
+                  type="email"
+                  name="email"
+                  placeholder="Votre e-mail"
+                  required
+                  class="w-full px-4 py-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
+                />
+              </div>
+
+              <!-- Téléphone -->
+              <div>
+                <label class="block text-gray-700 font-semibold mb-2"
+                  >Numéro de téléphone</label
+                >
+                <input
+                  type="tel"
+                  name="telephone"
+                  placeholder="Votre numéro de téléphone"
+                  required
+                  class="w-full px-4 py-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
+                />
+              </div>
+
+              <!-- Adresse -->
+              <div>
+                <label class="block text-gray-700 font-semibold mb-2"
+                  >Adresse</label
+                >
+                <input
+                  type="text"
+                  name="adresse"
+                  placeholder="Votre adresse"
+                  class="w-full px-4 py-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
+                />
+              </div>
+            </div>
+            <div class="w-1/2 space-y-6 scroll-animation">
+              <!-- Niveau d'étude -->
+              <div>
+                <label class="block text-gray-700 font-semibold mb-2"
+                  >Niveau d'étude</label
+                >
+                <input
+                  type="text"
+                  name="niveau_etude"
+                  placeholder="Ex: Bac+3"
+                  class="w-full px-4 py-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
+                />
+              </div>
+
+              <!-- Formation souhaitée -->
+              <div>
+                <label class="block text-gray-700 font-semibold mb-2"
+                  >Formation effectuée</label
+                >
+                <input
+                  type="text"
+                  name="formation"
+                  placeholder="Ex : Agronomie, Biotechnoligie ... "
+                  class="w-full px-4 py-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
+                />
+              </div>
+
+              <!-- Upload CV -->
+              <div>
+                <label class="block text-gray-700 font-semibold mb-2"
+                  >Votre CV (PDF)</label
+                >
+                <input
+                  type="file"
+                  name="cv"
+                  accept=".pdf"
+                  required
+                  class="w-full px-4 py-2 bg-white border rounded-lg text-gray-700"
+                />
+              </div>
+
+              <!-- Upload lettre -->
+              <div>
+                <label class="block text-gray-700 font-semibold mb-2"
+                  >Lettre de demande de stage (PDF)</label
+                >
+                <input
+                  type="file"
+                  name="lettre"
+                  accept=".pdf"
+                  required
+                  class="w-full px-4 py-2 bg-white border rounded-lg text-gray-700"
+                />
+              </div>
+            </div>
+          </div>
+
+          <!-- Bouton -->
+          <div class="text-center pt-4 scroll-animation">
+            <button
+              type="submit"
+              class="bg-green-600 hover:bg-green-700 text-white font-semibold px-6 py-3 rounded-lg shadow"
+            >
+              Envoyer ma demande
+            </button>
+          </div>
+        </form>
+      </div>
+    </section>
+
+
+    <!-- Testimonials -->
+    <section class="bg-gray-100 py-16 px-4 sm:px-8 lg:px-20">
+        <div class="max-w-6xl mx-auto text-center">
+          <h2 class="text-3xl font-bold text-green-700 mb-4 scroll-animation">Témoignages de nos anciens stagiaires</h2>
+          <p class="text-gray-600 mb-12 scroll-animation">Découvrez ce que nos anciens stagiaires pensent de leur passage chez EDENIA.</p>
+      
+          <div class="grid gap-8 md:grid-cols-2 lg:grid-cols-3">
+            <!-- Témoignage 1 -->
+            <div class="bg-white p-6 rounded-xl shadow hover:shadow-md transition duration-300 scroll-animation">
+              <p class="text-gray-700 mb-4 italic">“Une expérience inoubliable ! J’ai appris énormément sur l’élevage et la gestion agricole. Merci à toute l’équipe EDENIA.”</p>
+              <div class="flex items-center space-x-4">
+                <img src="assets/img/stagiaire.jpg" alt="Photo stagiaire" class="w-12 h-12 rounded-full">
+                <div class="text-left">
+                  <h4 class="font-semibold text-green-700">Aliou B.</h4>
+                  <span class="text-sm text-gray-500">Stagiaire en 2023</span>
+                </div>
+              </div>
+            </div>
+      
+            <!-- Témoignage 2 -->
+            <div class="bg-white p-6 rounded-xl shadow hover:shadow-md transition duration-300 scroll-animation">
+              <p class="text-gray-700 mb-4 italic">“Le professionnalisme et la pédagogie de l’équipe m’ont permis de mieux orienter mon projet d’agriculture durable.”</p>
+              <div class="flex items-center space-x-4">
+                <img src="assets/img/stagiaire.jpg" alt="Photo stagiaire" class="w-12 h-12 rounded-full">
+                <div class="text-left">
+                  <h4 class="font-semibold text-green-700">Chantale D.</h4>
+                  <span class="text-sm text-gray-500">Stagiaire en 2022</span>
+                </div>
+              </div>
+            </div>
+      
+            <!-- Témoignage 3 -->
+            <div class="bg-white p-6 rounded-xl shadow hover:shadow-md transition duration-300 scroll-animation">
+              <p class="text-gray-700 mb-4 italic">“J’ai adoré l’ambiance familiale et les conseils pratiques. Je recommande vivement ce stage à tout étudiant motivé.”</p>
+              <div class="flex items-center space-x-4">
+                <img src="assets/img/stagiaire.jpg" alt="Photo stagiaire" class="w-12 h-12 rounded-full">
+                <div class="text-left">
+                  <h4 class="font-semibold text-green-700">Hubert K.</h4>
+                  <span class="text-sm text-gray-500">Stagiaire en 2024</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+    </section>
+      
+
+
+
+    <!-- Footer -->
+    <footer class="bg-[#333333] text-white pt-12 pb-6">
+      <div class="container mx-auto px-4">
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 mb-8">
+          <!-- Column 1 -->
+          <div>
+            <a
+              href="#"
+              class="text-3xl font-['Pacifico'] text-white mb-4 inline-block"
+              >EDENIA</a
+            >
+            <p class="text-gray-300 mb-4">
+              Délices des champs, directement de notre ferme à votre table. Des
+              produits frais, sains et savoureux cultivés avec passion.
+            </p>
+            <div class="flex space-x-4">
+              <a
+                href="#"
+                class="w-10 h-10 bg-white bg-opacity-10 rounded-full flex items-center justify-center hover:bg-primary transition-colors"
+              >
+                <div class="w-5 h-5 flex items-center justify-center">
+                  <i class="ri-facebook-fill text-white"></i>
+                </div>
+              </a>
+              <a
+                href="#"
+                class="w-10 h-10 bg-white bg-opacity-10 rounded-full flex items-center justify-center hover:bg-primary transition-colors"
+              >
+                <div class="w-5 h-5 flex items-center justify-center">
+                  <i class="ri-instagram-line text-white"></i>
+                </div>
+              </a>
+              <a
+                href="#"
+                class="w-10 h-10 bg-white bg-opacity-10 rounded-full flex items-center justify-center hover:bg-primary transition-colors"
+              >
+                <div class="w-5 h-5 flex items-center justify-center">
+                  <i class="ri-twitter-x-line text-white"></i>
+                </div>
+              </a>
+            </div>
+          </div>
+          <!-- Column 2 -->
+          <div>
+            <h3 class="text-lg font-semibold mb-4">Liens Rapides</h3>
+            <ul class="space-y-2">
+              <li>
+                <a
+                  href="#"
+                  class="text-gray-300 hover:text-white transition-colors"
+                  >Accueil</a
+                >
+              </li>
+              <li>
+                <a
+                  href="#products"
+                  class="text-gray-300 hover:text-white transition-colors"
+                  >Nos Produits</a
+                >
+              </li>
+              <li>
+                <a
+                  href="#stages"
+                  class="text-gray-300 hover:text-white transition-colors"
+                  >Stages</a
+                >
+              </li>
+              <li>
+                <a
+                  href="#contact"
+                  class="text-gray-300 hover:text-white transition-colors"
+                  >Contact</a
+                >
+              </li>
+              <li>
+                <a
+                  href="#"
+                  class="text-gray-300 hover:text-white transition-colors"
+                  >À Propos</a
+                >
+              </li>
+            </ul>
+          </div>
+          <!-- Column 3 -->
+          <div>
+            <h3 class="text-lg font-semibold mb-4">Nos Produits</h3>
+            <ul class="space-y-2">
+              <li>
+                <a
+                  href="#"
+                  class="text-gray-300 hover:text-white transition-colors"
+                  >Bananes Cavendish</a
+                >
+              </li>
+              <li>
+                <a
+                  href="#"
+                  class="text-gray-300 hover:text-white transition-colors"
+                  >Œufs Fermiers</a
+                >
+              </li>
+              <li>
+                <a
+                  href="#"
+                  class="text-gray-300 hover:text-white transition-colors"
+                  >Escargots Précuits</a
+                >
+              </li>
+              <li>
+                <a
+                  href="#"
+                  class="text-gray-300 hover:text-white transition-colors"
+                  >Porc Fermier</a
+                >
+              </li>
+              <li>
+                <a
+                  href="#"
+                  class="text-gray-300 hover:text-white transition-colors"
+                  >Formules spéciales</a
+                >
+              </li>
+            </ul>
+          </div>
+          <!-- Column 4 -->
+          <div>
+            <h3 class="text-lg font-semibold mb-4">Newsletter</h3>
+            <p class="text-gray-300 mb-4">
+              Inscrivez-vous pour recevoir nos actualités et offres spéciales.
+            </p>
+            <form>
+              <div class="flex mb-3">
+                <input
+                  type="email"
+                  placeholder="Votre email"
+                  class="bg-white bg-opacity-10 text-white px-4 py-2 rounded-l-button w-full focus:outline-none border-none"
+                  style="min-width: 0"
+                />
+                <button
+                  type="submit"
+                  class="bg-[#FF9800] text-white px-4 py-2 rounded-r-button hover:bg-opacity-90 transition-colors whitespace-nowrap"
+                >
+                  S'inscrire
+                </button>
+              </div>
+              <label class="custom-checkbox flex items-center">
+                <span class="ml-7 text-gray-300 text-sm"
+                  >J'accepte de recevoir la newsletter</span
+                >
+                <input type="checkbox" />
+                <span class="checkmark border-gray-500"></span>
+              </label>
+            </form>
+          </div>
+        </div>
+        <div class="border-t border-gray-700 pt-6 mt-6">
+          <div class="flex flex-col md:flex-row justify-between items-center">
+            <p class="text-gray-400 text-sm mb-4 md:mb-0">
+              &copy; 2025 EDENIA - Délices des champs. Tous droits réservés.
+            </p>
+            <div class="flex flex-wrap gap-4 text-sm text-gray-400">
+              <a href="#" class="hover:text-white transition-colors"
+                >Mentions Légales</a
+              >
+              <a href="#" class="hover:text-white transition-colors"
+                >Politique de Confidentialité</a
+              >
+              <a href="#" class="hover:text-white transition-colors">CGV</a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </footer>
+
+    <!-- Back to Top Button -->
+    <button
+      id="back-to-top"
+      class="fixed bottom-6 right-6 bg-primary text-white p-3 rounded-full shadow-lg z-50 opacity-0 invisible transition-opacity duration-300"
+    >
+      <div class="w-6 h-6 flex items-center justify-center">
+        <i class="ri-arrow-up-line"></i>
+      </div>
+    </button>
+
+    <!-- Scripts -->
+    <script id="mobile-menu-script">
+      document.addEventListener("DOMContentLoaded", function () {
+        const mobileMenuButton = document.getElementById("mobile-menu-button");
+        const mobileMenu = document.getElementById("mobile-menu");
+
+        mobileMenuButton.addEventListener("click", function () {
+          mobileMenu.classList.toggle("hidden");
+          if (mobileMenu.classList.contains("hidden")) {
+            mobileMenuButton.innerHTML =
+              '<i class="ri-menu-line ri-lg text-gray-600"></i>';
+          } else {
+            mobileMenuButton.innerHTML =
+              '<i class="ri-close-line ri-lg text-gray-600"></i>';
+          }
+        });
+
+        // Close mobile menu when clicking on a link
+        const mobileLinks = mobileMenu.querySelectorAll("a");
+        mobileLinks.forEach((link) => {
+          link.addEventListener("click", function () {
+            mobileMenu.classList.add("hidden");
+            mobileMenuButton.innerHTML =
+              '<i class="ri-menu-line ri-lg text-gray-600"></i>';
+          });
+        });
+      });
+    </script>
+
+    <script id="filter-toggle-script">
+      document.addEventListener("DOMContentLoaded", function () {
+        const filterToggle = document.getElementById("filter-toggle");
+        const filterDropdown = document.getElementById("filter-dropdown");
+
+        if (filterToggle && filterDropdown) {
+          filterToggle.addEventListener("click", function () {
+            filterDropdown.classList.toggle("open");
+            filterToggle.classList.toggle("active");
+          });
+        }
+      });
+    </script>
+
+    <script id="accordion-script">
+      document.addEventListener("DOMContentLoaded", function () {
+        const accordionButtons = document.querySelectorAll(".accordion-button");
+
+        accordionButtons.forEach((button) => {
+          button.addEventListener("click", function () {
+            const content = this.nextElementSibling;
+
+            // Toggle active class on button
+            this.classList.toggle("active");
+
+            // Toggle open class on content
+            content.classList.toggle("open");
+          });
+        });
+      });
+    </script>
+
+    <script id="back-to-top-script">
+      document.addEventListener("DOMContentLoaded", function () {
+        const backToTopButton = document.getElementById("back-to-top");
+
+        function toggleBackToTopButton() {
+          if (window.pageYOffset > 300) {
+            backToTopButton.classList.add("opacity-100");
+            backToTopButton.classList.remove("opacity-0", "invisible");
+          } else {
+            backToTopButton.classList.remove("opacity-100");
+            backToTopButton.classList.add("opacity-0", "invisible");
+          }
+        }
+
+        backToTopButton.addEventListener("click", function () {
+          window.scrollTo({
+            top: 0,
+            behavior: "smooth",
+          });
+        });
+
+        window.addEventListener("scroll", toggleBackToTopButton);
+        toggleBackToTopButton();
+      });
+    </script>
+
+    <script id="scroll-animation-script">
+        document.addEventListener("DOMContentLoaded", function () {
+        const scrollAnimations = document.querySelectorAll(".scroll-animation");
+        function checkScroll() {
+            scrollAnimations.forEach((animation) => {
+            const animationPosition = animation.getBoundingClientRect().top;
+            const screenPosition = window.innerHeight / 1.2;
+            if (animationPosition < screenPosition) {
+                animation.classList.add("active");
+            }
+            });
+        }
+        // Initial check
+        checkScroll();
+        // Check on scroll
+        window.addEventListener("scroll", checkScroll);
+        });
+    </script>
+  </body>
+</html>
